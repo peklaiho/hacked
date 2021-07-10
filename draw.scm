@@ -26,9 +26,10 @@
 
 (define statusbar-content
   (lambda ()
-    (format "~3d:~2d    ~a"
+    (format "~3d:~2d g~d    ~a"
             (add1 (buffer-line))
             (buffer-column)
+            (buffer-goal-column)
             (buffer-name))))
 
 (define draw-statusbar

@@ -1,46 +1,77 @@
-;; Movement functions
+;; --------
+;; Movement
+;; --------
 
 ;; Advance point by n characters.
 ;; Negative value to go backwards.
 ;; Returns #f if failed, otherwise new point.
 (define advance-point
   (lambda (n)
-    (let ([goal (+ (buffer-point) n)])
-      (if (or (< goal 0) (> goal (buffer-length))) #f
+    (let ([pt (+ (buffer-point) n)])
+      (if (or (< pt 0) (> pt (buffer-length))) #f
           (begin
-            (buffer-point-set! goal)
+            (buffer-point-set! pt)
             (buffer-goal-column-set! (buffer-column))
-            (buffer-point))))))
+            pt)))))
 
+;; Move point forward one character.
 (define forward-character
   (case-lambda
    [() (forward-character 1)]
    [(n) (advance-point n)]))
 
+;; Move point backward one character.
 (define backward-character
   (case-lambda
    [() (backward-character 1)]
    [(n) (advance-point (- n))]))
 
+;; Move point to beginning of line.
+(define begin-of-line
+  (lambda ()
+    (let ([pt (car (buffer-line-index))])
+      (buffer-point-set! pt)
+      (buffer-goal-column-set! (buffer-column))
+      pt)))
+
+;; Move point to end of line.
+(define end-of-line
+  (lambda ()
+    (let ([pt (cdr (buffer-line-index))])
+      (buffer-point-set! pt)
+      (buffer-goal-column-set! (buffer-column))
+      pt)))
+
+;; Move point to given line.
+;; Column can be given as second argument. It defaults
+;; to goal-column of the buffer.
+;; Returns the index-pair of the line or #f if not successful.
 (define goto-line
-  (lambda (l)
+  (case-lambda
+   [(l) (goto-line l (buffer-goal-column))]
+   [(l c)
     (let ([idx (buffer-line-index current-buffer l)])
       (if (not idx) #f
           (begin
             (buffer-point-set! (car idx))
-            (buffer-column-set! (buffer-goal-column)))))))
+            (buffer-column-set! c)
+            idx)))]))
 
+;; Move point to next line.
 (define forward-line
   (case-lambda
    [() (forward-line 1)]
    [(n) (goto-line (+ (buffer-line) n))]))
 
+;; Move point to previous line.
 (define backward-line
   (case-lambda
    [() (backward-line 1)]
    [(n) (goto-line (- (buffer-line) n))]))
 
-;; Editing functions
+;; --------
+;; Deletion
+;; --------
 
 ;; Delete one character at given index.
 ;; Does not check bounds, returns #t.
@@ -66,19 +97,23 @@
         (delete-character-forward)
         #f)))
 
-;; Insert one character.
+;; ---------
+;; Insertion
+;; ---------
+
+;; Insert character.
 (define insert-character
   (case-lambda
    [(ch) (insert-character ch (buffer-point))]
    [(ch idx) (insert-string (string ch) idx)]))
 
-;; Insert character and move forward.
+;; Insert character and move point forward.
 (define insert-character-forward
   (lambda (ch)
     (insert-character ch)
     (forward-character)))
 
-;; Insert string and return #t.
+;; Insert string.
 (define insert-string
   (case-lambda
    [(txt) (insert-string txt (buffer-point))]
