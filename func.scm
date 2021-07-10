@@ -2,13 +2,15 @@
 
 ;; Advance point by n characters.
 ;; Negative value to go backwards.
-;; Returns #f if failed.
+;; Returns #f if failed, otherwise new point.
 (define advance-point
   (lambda (n)
     (let ([goal (+ (buffer-point) n)])
-      (buffer-point-set! goal)
-      (if (= goal (buffer-point))
-          (buffer-point) #f))))
+      (if (or (< goal 0) (> goal (buffer-length))) #f
+          (begin
+            (buffer-point-set! goal)
+            (buffer-goal-column-set! (buffer-column))
+            (buffer-point))))))
 
 (define forward-character
   (case-lambda
@@ -19,6 +21,24 @@
   (case-lambda
    [() (backward-character 1)]
    [(n) (advance-point (- n))]))
+
+(define goto-line
+  (lambda (l)
+    (let ([idx (buffer-line-index current-buffer l)])
+      (if (not idx) #f
+          (begin
+            (buffer-point-set! (car idx))
+            (buffer-column-set! (buffer-goal-column)))))))
+
+(define forward-line
+  (case-lambda
+   [() (forward-line 1)]
+   [(n) (goto-line (+ (buffer-line) n))]))
+
+(define backward-line
+  (case-lambda
+   [() (backward-line 1)]
+   [(n) (goto-line (- (buffer-line) n))]))
 
 ;; Editing functions
 

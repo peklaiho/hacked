@@ -6,6 +6,10 @@
       (lambda () (backward-character))]
      [(= key KEY_RIGHT)
       (lambda () (forward-character))]
+     [(= key KEY_UP)
+      (lambda () (backward-line))]
+     [(= key KEY_DOWN)
+      (lambda () (forward-line))]
      [(= key KEY_DC)
       (lambda () (delete-character-forward))]
      [(or (= key 127) (= key KEY_BACKSPACE))

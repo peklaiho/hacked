@@ -6,7 +6,8 @@
    '#((mutable name)
       (mutable content)
       (mutable point)
-      (mutable line-index))))
+      (mutable goal-col)
+      (mutable line-indices))))
 
 (define buffer-rcd
   (make-record-constructor-descriptor
@@ -17,8 +18,8 @@
   (case-lambda
    [(n) (make-buffer n "")]
    [(n c)
-    (let ([b ((record-constructor buffer-rcd) n c 0 '#())])
-      (buffer-update-line-index b)
+    (let ([b ((record-constructor buffer-rcd) n c 0 0 '#())])
+      (buffer-update-line-indices b)
       b)]))
 
 ;; Getters
@@ -38,10 +39,15 @@
    [() (buffer-point current-buffer)]
    [(b) ((record-accessor buffer-rtd 2) b)]))
 
-(define buffer-line-index
+(define buffer-goal-column
   (case-lambda
-   [() (buffer-line-index current-buffer)]
+   [() (buffer-goal-column current-buffer)]
    [(b) ((record-accessor buffer-rtd 3) b)]))
+
+(define buffer-line-indices
+  (case-lambda
+   [() (buffer-line-indices current-buffer)]
+   [(b) ((record-accessor buffer-rtd 4) b)]))
 
 ;; Helpers
 
@@ -50,14 +56,63 @@
    [() (buffer-length current-buffer)]
    [(b) (string-length (buffer-content b))]))
 
+;; Return the current column index.
+(define buffer-column
+  (case-lambda
+   [() (buffer-column current-buffer)]
+   [(b) (- (buffer-point b) (car (buffer-line-index b)))]))
+
+;; Set the column of the point.
+;; Check against boundaries of current line.
+(define buffer-column-set!
+  (case-lambda
+   [(i) (buffer-column-set! current-buffer i)]
+   [(b i) (let* ([li (buffer-line-index b)]
+                 [pt (+ (car li) i)])
+            (buffer-point-set!
+             b (min-max pt (car li) (cdr li))))]))
+
+;; Return the current line index.
+(define buffer-line
+  (case-lambda
+   [() (buffer-line current-buffer)]
+   [(b) (call/cc
+         (lambda (break)
+           (let loop ([l 0])
+             (if (<= (buffer-point b)
+                     (cdr (vector-ref (buffer-line-indices b) l)))
+                 (break l)
+                 (loop (add1 l))))))]))
+
+;; Start (inclusive) and end (exclusive) index of given line.
+(define buffer-line-index
+  (case-lambda
+   [() (buffer-line-index current-buffer)]
+   [(b) (buffer-line-index b (buffer-line b))]
+   [(b i) (let ([ind (buffer-line-indices b)])
+            (if (or (< i 0) (>= i (vector-length ind))) #f
+                (vector-ref ind i)))]))
+
+;; Indexes of the previous line or #f.
+(define buffer-line-index-prev
+  (case-lambda
+   [() (buffer-line-index-prev current-buffer)]
+   [(b) (buffer-line-index b (sub1 (buffer-line b)))]))
+
+;; Indexes of the next line or #f.
+(define buffer-line-index-next
+  (case-lambda
+   [() (buffer-line-index-next current-buffer)]
+   [(b) (buffer-line-index b (add1 (buffer-line b)))]))
+
 (define buffer-substring
   (case-lambda
    [(beg end) (buffer-substring current-buffer beg end)]
    [(b beg end) (substring (buffer-content b) beg end)]))
 
-(define buffer-update-line-index
+(define buffer-update-line-indices
   (lambda (b)
-    (buffer-line-index-set! b
+    (buffer-line-indices-set! b
      (list->vector
       (string-split-index (buffer-content b) #\newline)))))
 
@@ -73,7 +128,7 @@
    [(v) (buffer-content-set! current-buffer v)]
    [(b v)
     ((record-mutator buffer-rtd 1) b v)
-    (buffer-update-line-index b)]))
+    (buffer-update-line-indices b)]))
 
 (define buffer-point-set!
   (case-lambda
@@ -81,7 +136,12 @@
    [(b v) ((record-mutator buffer-rtd 2) b
            (min-max v 0 (buffer-length b)))]))
 
-(define buffer-line-index-set!
+(define buffer-goal-column-set!
   (case-lambda
-   [(v) (buffer-line-index-set! current-buffer v)]
+   [(v) (buffer-goal-column-set! current-buffer v)]
    [(b v) ((record-mutator buffer-rtd 3) b v)]))
+
+(define buffer-line-indices-set!
+  (case-lambda
+   [(v) (buffer-line-indices-set! current-buffer v)]
+   [(b v) ((record-mutator buffer-rtd 4) b v)]))

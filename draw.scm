@@ -12,5 +12,12 @@
   (lambda ()
     (mvaddstr
      (- LINES 2) 0
-     (format "Point: ~d, Screen: ~dx~d, Length: ~d"
-             (buffer-point) COLS LINES (buffer-length)))))
+     (format "Point: ~d, Column: ~d, Goal: ~d, Line: ~d (~d:~d), Screen: ~dx~d, Length: ~d"
+             (buffer-point)
+             (buffer-column)
+             (buffer-goal-column)
+             (buffer-line)
+             (car (buffer-line-index))
+             (cdr (buffer-line-index))
+             COLS LINES
+             (buffer-length)))))
