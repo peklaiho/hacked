@@ -69,6 +69,30 @@
    [() (backward-line 1)]
    [(n) (goto-line (- (buffer-line) n))]))
 
+;; ------------------
+;; Offset (scrolling)
+;; ------------------
+
+(define advance-offset
+  (lambda (n)
+    (buffer-offset-set! (+ (buffer-offset) n))))
+
+(define scroll-line-forward
+  (lambda ()
+    (advance-offset 1)))
+
+(define scroll-line-backward
+  (lambda ()
+    (advance-offset -1)))
+
+(define scroll-page-forward
+  (lambda ()
+    (advance-offset 20)))
+
+(define scroll-page-backward
+  (lambda ()
+    (advance-offset -20)))
+
 ;; --------
 ;; Deletion
 ;; --------

@@ -17,7 +17,7 @@
        (let loop ([i 0])
          (when (>= i (- LINES 2))
            (break i))
-         (let ([line (buffer-line-index current-buffer i)])
+         (let ([line (buffer-line-index current-buffer (+ i (buffer-offset)))])
            (when (not line)
              (break i))
            (let ([content (buffer-substring (car line) (cdr line))])
@@ -26,10 +26,11 @@
 
 (define statusbar-content
   (lambda ()
-    (format "~3d:~2d g~d    ~a"
+    (format "~3d:~2d g~d o~d    ~a"
             (add1 (buffer-line))
             (buffer-column)
             (buffer-goal-column)
+            (buffer-offset)
             (buffer-name))))
 
 (define draw-statusbar

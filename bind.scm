@@ -2,6 +2,8 @@
   (lambda (key)
     (debug-log (format "KEY -> Octal: ~o, Decimal: ~d, Hex: ~x, Char: ~c" key key key (integer->char key)))
     (cond
+
+     ;; Movement
      [(= key KEY_LEFT)
       (lambda () (backward-character))]
      [(= key KEY_RIGHT)
@@ -14,10 +16,23 @@
       (lambda () (begin-of-line))]
      [(= key KEY_END)
       (lambda () (end-of-line))]
+
+     ;; Scrolling
+     [(= key (char->integer #\z))
+      (lambda () (scroll-line-backward))]
+     [(= key (char->integer #\x))
+      (lambda () (scroll-line-forward))]
+     [(= key KEY_PPAGE)
+      (lambda () (scroll-page-backward))]
+     [(= key KEY_NPAGE)
+      (lambda () (scroll-page-forward))]
+
+     ;; Deletion
      [(= key KEY_DC)
       (lambda () (delete-character-forward))]
      [(or (= key 127) (= key KEY_BACKSPACE))
       (lambda () (delete-character-backward))]
+
      [(= key (char->integer #\q))
       (lambda () (exit-program 0))]
      [else

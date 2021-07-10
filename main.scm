@@ -25,6 +25,17 @@
     (newline debug-file)
     (flush-output-port debug-file)))
 
+(define read-file
+  (lambda (filename)
+    (let* ([f (open-file-input-port
+               filename
+               (file-options)
+               (buffer-mode block)
+               (make-transcoder (utf-8-codec)))]
+           [content (get-string-all f)])
+      (close-port f)
+      content)))
+
 (define exit-program
   (lambda (exit-code)
     (endwin)
@@ -62,7 +73,7 @@
 (set! current-buffer
       (make-buffer
        "*scratch*"
-       "Some text written on the buffer...\nMore text on second line!\nThird line\n\nActually lets add a few more\nlines here, so we have\nmore test to work with..."))
+       (read-file "alice.txt")))
 
 ;; Draw screen
 (draw-screen)

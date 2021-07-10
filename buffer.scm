@@ -7,6 +7,7 @@
       (mutable content)
       (mutable point)
       (mutable goal-col)
+      (mutable offset)
       (mutable line-indices))))
 
 (define buffer-rcd
@@ -18,7 +19,7 @@
   (case-lambda
    [(n) (make-buffer n "")]
    [(n c)
-    (let ([b ((record-constructor buffer-rcd) n c 0 0 '#())])
+    (let ([b ((record-constructor buffer-rcd) n c 0 0 0 '#())])
       (buffer-update-line-indices b)
       b)]))
 
@@ -44,10 +45,15 @@
    [() (buffer-goal-column current-buffer)]
    [(b) ((record-accessor buffer-rtd 3) b)]))
 
+(define buffer-offset
+  (case-lambda
+   [() (buffer-offset current-buffer)]
+   [(b) ((record-accessor buffer-rtd 4) b)]))
+
 (define buffer-line-indices
   (case-lambda
    [() (buffer-line-indices current-buffer)]
-   [(b) ((record-accessor buffer-rtd 4) b)]))
+   [(b) ((record-accessor buffer-rtd 5) b)]))
 
 ;; Helpers
 
@@ -141,7 +147,13 @@
    [(v) (buffer-goal-column-set! current-buffer v)]
    [(b v) ((record-mutator buffer-rtd 3) b v)]))
 
+(define buffer-offset-set!
+  (case-lambda
+   [(v) (buffer-offset-set! current-buffer v)]
+   [(b v) ((record-mutator buffer-rtd 4) b
+           (min-max v 0 (- (vector-length (buffer-line-indices b)) 6)))]))
+
 (define buffer-line-indices-set!
   (case-lambda
    [(v) (buffer-line-indices-set! current-buffer v)]
-   [(b v) ((record-mutator buffer-rtd 4) b v)]))
+   [(b v) ((record-mutator buffer-rtd 5) b v)]))
