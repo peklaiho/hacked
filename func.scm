@@ -1,42 +1,64 @@
+;; Movement functions
+
 ;; Advance point by n characters.
 ;; Negative value to go backwards.
-;; Return #t if changed, otherwise #f.
+;; Returns #f if failed.
 (define advance-point
   (lambda (n)
-    (let ([old (buffer-point)])
-      (buffer-point-set! (+ old n))
-      (not (= old (buffer-point))))))
+    (let ([goal (+ (buffer-point) n)])
+      (buffer-point-set! goal)
+      (if (= goal (buffer-point))
+          (buffer-point) #f))))
+
+(define forward-character
+  (case-lambda
+   [() (forward-character 1)]
+   [(n) (advance-point n)]))
+
+(define backward-character
+  (case-lambda
+   [() (backward-character 1)]
+   [(n) (advance-point (- n))]))
 
 ;; Editing functions
 
+;; Delete one character at given index.
+;; Does not check bounds, returns #t.
 (define delete-character
   (lambda (idx)
-    (if (or (< idx 0) (>= idx (buffer-length))) #f
-        (begin
-          (buffer-content-set!
-           (string-append
-            (buffer-substring 0 idx)
-            (buffer-substring (add1 idx) (buffer-length))))
-          #t))))
+    (buffer-content-set!
+     (string-append
+      (buffer-substring 0 idx)
+      (buffer-substring (add1 idx) (buffer-length))))
+    #t))
 
+;; Delete one character forward.
 (define delete-character-forward
   (lambda ()
-    (delete-character (buffer-point))))
+    (if (< (buffer-point) (buffer-length))
+        (delete-character (buffer-point))
+        #f)))
 
+;; Delete one character backward.
 (define delete-character-backward
   (lambda ()
-    (if (advance-point -1) (delete-character-forward) #f)))
+    (if (backward-character)
+        (delete-character-forward)
+        #f)))
 
+;; Insert one character.
 (define insert-character
   (case-lambda
    [(ch) (insert-character ch (buffer-point))]
    [(ch idx) (insert-string (string ch) idx)]))
 
-(define insert-character-adv-point
+;; Insert character and move forward.
+(define insert-character-forward
   (lambda (ch)
     (insert-character ch)
-    (advance-point 1)))
+    (forward-character)))
 
+;; Insert string and return #t.
 (define insert-string
   (case-lambda
    [(txt) (insert-string txt (buffer-point))]

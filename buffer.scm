@@ -3,7 +3,10 @@
 (define buffer-rtd
   (make-record-type-descriptor
    'buffer #f #f #f #f
-   '#((mutable name) (mutable content) (mutable point))))
+   '#((mutable name)
+      (mutable content)
+      (mutable point)
+      (mutable line-index))))
 
 (define buffer-rcd
   (make-record-constructor-descriptor
@@ -13,7 +16,10 @@
 (define make-buffer
   (case-lambda
    [(n) (make-buffer n "")]
-   [(n c) ((record-constructor buffer-rcd) n c 0)]))
+   [(n c)
+    (let ([b ((record-constructor buffer-rcd) n c 0 '#())])
+      (buffer-update-line-index b)
+      b)]))
 
 ;; Getters
 
@@ -32,6 +38,11 @@
    [() (buffer-point current-buffer)]
    [(b) ((record-accessor buffer-rtd 2) b)]))
 
+(define buffer-line-index
+  (case-lambda
+   [() (buffer-line-index current-buffer)]
+   [(b) ((record-accessor buffer-rtd 3) b)]))
+
 ;; Helpers
 
 (define buffer-length
@@ -44,6 +55,12 @@
    [(beg end) (buffer-substring current-buffer beg end)]
    [(b beg end) (substring (buffer-content b) beg end)]))
 
+(define buffer-update-line-index
+  (lambda (b)
+    (buffer-line-index-set! b
+     (list->vector
+      (string-split-index (buffer-content b) #\newline)))))
+
 ;; Setters
 
 (define buffer-name-set!
@@ -54,10 +71,17 @@
 (define buffer-content-set!
   (case-lambda
    [(v) (buffer-content-set! current-buffer v)]
-   [(b v) ((record-mutator buffer-rtd 1) b v)]))
+   [(b v)
+    ((record-mutator buffer-rtd 1) b v)
+    (buffer-update-line-index b)]))
 
 (define buffer-point-set!
   (case-lambda
    [(v) (buffer-point-set! current-buffer v)]
    [(b v) ((record-mutator buffer-rtd 2) b
            (min-max v 0 (buffer-length b)))]))
+
+(define buffer-line-index-set!
+  (case-lambda
+   [(v) (buffer-line-index-set! current-buffer v)]
+   [(b v) ((record-mutator buffer-rtd 3) b v)]))

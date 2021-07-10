@@ -66,10 +66,7 @@
 (draw-screen)
 
 ;; Main loop
-(let loop ([ch (getch)])
-  (if (= ch KEY_RESIZE)
-      (set! redraw-screen #t)
-      (let ([f (binding-for-key ch)])
-        (if f (f) #f)))
+(let loop ()
+  (process-input)
   (draw-screen)
-  (loop (getch)))
+  (loop))
