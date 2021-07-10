@@ -55,12 +55,14 @@
 ;; Enable color
 (start-color)
 (use-default-colors)
+(assume-default-colors -1 -1)
+(init-pair 1 COLOR_BLACK COLOR_WHITE)
 
 ;; Make a scratch buffer and set it as current
 (set! current-buffer
       (make-buffer
        "*scratch*"
-       "Some text written on the buffer...\nMore text on second line!\nThird line"))
+       "Some text written on the buffer...\nMore text on second line!\nThird line\n\nActually lets add a few more\nlines here, so we have\nmore test to work with..."))
 
 ;; Draw screen
 (draw-screen)

@@ -4,20 +4,38 @@
   (lambda ()
     (if redraw-screen (clear) (erase))
     (set! redraw-screen #f)
-    (mvaddstr 0 0 (buffer-content))
-    (draw-minibuf)
+    (draw-buffer)
+    (draw-statusbar)
+    (move (buffer-line) (buffer-column))
     (refresh)))
 
-(define draw-minibuf
+(define draw-buffer
   (lambda ()
-    (mvaddstr
-     (- LINES 2) 0
-     (format "Point: ~d, Column: ~d, Goal: ~d, Line: ~d (~d:~d), Screen: ~dx~d, Length: ~d"
-             (buffer-point)
-             (buffer-column)
-             (buffer-goal-column)
-             (buffer-line)
-             (car (buffer-line-index))
-             (cdr (buffer-line-index))
-             COLS LINES
-             (buffer-length)))))
+    (color-set 0 0)
+    (call/cc
+     (lambda (break)
+       (let loop ([i 0])
+         (when (>= i (- LINES 2))
+           (break i))
+         (let ([line (buffer-line-index current-buffer i)])
+           (when (not line)
+             (break i))
+           (let ([content (buffer-substring (car line) (cdr line))])
+             (mvaddstr i 0 content)
+             (loop (add1 i)))))))))
+
+(define statusbar-content
+  (lambda ()
+    (format "~3d:~2d    ~a"
+            (add1 (buffer-line))
+            (buffer-column)
+            (buffer-name))))
+
+(define draw-statusbar
+  (lambda ()
+    (color-set 1 0)
+    (let* ([content (statusbar-content)]
+           [fill (- COLS (string-length content))])
+      (when (> fill 0)
+        (set! content (string-append content (make-string fill #\space))))
+      (mvaddstr (- LINES 2) 0 content))))
