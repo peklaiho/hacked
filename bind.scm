@@ -31,10 +31,18 @@
       (lambda () (scroll-left))]
      [(= key (char->integer #\d))
       (lambda () (scroll-right))]
+
      [(= key KEY_PPAGE)
       (lambda () (scroll-page-up))]
      [(= key KEY_NPAGE)
       (lambda () (scroll-page-down))]
+
+     [(= key (char->integer #\t))
+      (lambda () (scroll-current-line-top))]
+     [(= key (char->integer #\b))
+      (lambda () (scroll-current-line-bottom))]
+     [(= key (char->integer #\m))
+      (lambda () (scroll-current-line-middle))]
 
      ;; Deletion
      [(= key KEY_DC)

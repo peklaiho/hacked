@@ -132,6 +132,18 @@
   (lambda ()
     (- (lines-for-buffer) 2)))
 
+(define scroll-current-line-top
+  (lambda ()
+    (set-offset-line (buffer-line))))
+
+(define scroll-current-line-bottom
+  (lambda ()
+    (set-offset-line (- (buffer-line) (lines-for-buffer) -1))))
+
+(define scroll-current-line-middle
+  (lambda ()
+    (set-offset-line (- (buffer-line) (div (lines-for-buffer) 2)))))
+
 ;; --------
 ;; Deletion
 ;; --------
@@ -201,30 +213,23 @@
 ;; Move the point to current offsets.
 (define reconcile-by-moving-point
   (lambda ()
-    (debug-log "reconcile-by-moving-point")
     (let ([ln (buffer-line)]
           [cl (buffer-column)]
           [ofs-ln (buffer-offset-line)]
           [ofs-cl (buffer-offset-column)])
       (when (< ln ofs-ln)
-        (debug-log "goto up")
         (goto-line ofs-ln))
       (when (> ln (+ ofs-ln (last-line)))
-        (debug-log "goto down")
         (goto-line (+ ofs-ln (last-line))))
       (when (< cl ofs-cl)
-        (debug-log "left")
         (set-point-and-goal (+ (buffer-point) (- ofs-cl cl))))
       (when (> cl (+ ofs-cl (last-column)))
-        (debug-log "right")
         (set-point-and-goal (- (buffer-point)
-                               (- cl (+ ofs-cl (last-column))))))
-      )))
+                               (- cl (+ ofs-cl (last-column)))))))))
 
 ;; Change offsets so point is visible.
 (define reconcile-by-scrolling
   (lambda ()
-    (debug-log "reconcile-by-scrolling")
     (let ([ln (buffer-line)]
           [cl (buffer-column)]
           [ofs-ln (buffer-offset-line)]
