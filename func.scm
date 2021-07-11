@@ -53,8 +53,8 @@
     (let ([idx (buffer-line-index current-buffer l)])
       (if (not idx) #f
           (begin
-            (buffer-point-set! (car idx))
-            (buffer-column-set! c)
+            (buffer-point-set!
+             (min-max (+ (car idx) c) (car idx) (cdr idx)))
             idx)))]))
 
 ;; Move point to next line.

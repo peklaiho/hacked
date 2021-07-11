@@ -68,16 +68,6 @@
    [() (buffer-column current-buffer)]
    [(b) (- (buffer-point b) (car (buffer-line-index b)))]))
 
-;; Set the column of the point.
-;; Check against boundaries of current line.
-(define buffer-column-set!
-  (case-lambda
-   [(i) (buffer-column-set! current-buffer i)]
-   [(b i) (let* ([li (buffer-line-index b)]
-                 [pt (+ (car li) i)])
-            (buffer-point-set!
-             b (min-max pt (car li) (cdr li))))]))
-
 ;; Return the current line index.
 (define buffer-line
   (case-lambda
