@@ -6,7 +6,8 @@
     (set! redraw-screen #f)
     (draw-buffer)
     (draw-statusbar)
-    (move (- (buffer-line) (buffer-offset)) (buffer-column))
+    (move (- (buffer-line) (buffer-offset-line))
+          (- (buffer-column) (buffer-offset-column)))
     (refresh)))
 
 (define draw-buffer
@@ -15,22 +16,25 @@
     (call/cc
      (lambda (break)
        (let loop ([i 0])
-         (when (> i (- LINES 3))
+         (when (> i (last-line))
            (break i))
-         (let ([line (buffer-line-index (+ i (buffer-offset)))])
+         (let ([line (buffer-line-index (+ i (buffer-offset-line)))])
            (when (not line)
              (break i))
-           (let ([content (buffer-substring (car line) (cdr line))])
+           (let ([content (buffer-substring
+                           (+ (car line) (buffer-offset-column))
+                           (cdr line))])
              (mvaddstr i 0 content)
              (loop (add1 i)))))))))
 
 (define statusbar-content
   (lambda ()
-    (format "~3d:~2d g~d o~d    ~a"
+    (format "~3d:~2d g~2d o~3d:~2d    ~a"
             (add1 (buffer-line))
             (buffer-column)
             (buffer-goal-column)
-            (buffer-offset)
+            (buffer-offset-line)
+            (buffer-offset-column)
             (buffer-name))))
 
 (define draw-statusbar
@@ -40,4 +44,4 @@
            [fill (- COLS (string-length content))])
       (when (> fill 0)
         (set! content (string-append content (make-string fill #\space))))
-      (mvaddstr (- LINES 2) 0 content))))
+      (mvaddstr (lines-for-buffer) 0 content))))

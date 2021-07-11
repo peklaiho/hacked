@@ -7,7 +7,8 @@
       (mutable content)
       (mutable point)
       (mutable goal-col)
-      (mutable offset)
+      (mutable offset-line)
+      (mutable offset-col)
       (mutable line)
       (mutable line-indices))))
 
@@ -18,17 +19,26 @@
 ;; Constructor
 (define make-buffer
   (case-lambda
-   [(n) (make-buffer n "")]
-   [(n c)
-    (let ([b ((record-constructor buffer-rcd) n c 0 0 0 0 '#())])
+   [(name) (make-buffer name "")]
+   [(name content)
+    (let ([b ((record-constructor buffer-rcd)
+              name
+              content
+              0        ; point
+              0        ; goal-col
+              0        ; offset-line
+              0        ; offset-col
+              0        ; line
+              '#()     ; line-indices
+              )])
       (buffer-update-line-indices b)
       b)]))
 
 ;; Internal functions
 
-;; Future improvement: line is likely near the offset,
-;; so we could start the search from the offset and then
-;; go up or down.
+;; Future improvement: current line is likely near the offset-line,
+;; so we could start the search from the offset-line and then
+;; go up or down from there.
 (define buffer-update-line
   (lambda (b)
     (buffer-line-set! b
@@ -68,20 +78,25 @@
    [() (buffer-goal-column current-buffer)]
    [(b) ((record-accessor buffer-rtd 3) b)]))
 
-(define buffer-offset
+(define buffer-offset-line
   (case-lambda
-   [() (buffer-offset current-buffer)]
+   [() (buffer-offset-line current-buffer)]
    [(b) ((record-accessor buffer-rtd 4) b)]))
+
+(define buffer-offset-column
+  (case-lambda
+   [() (buffer-offset-column current-buffer)]
+   [(b) ((record-accessor buffer-rtd 5) b)]))
 
 (define buffer-line
   (case-lambda
    [() (buffer-line current-buffer)]
-   [(b) ((record-accessor buffer-rtd 5) b)]))
+   [(b) ((record-accessor buffer-rtd 6) b)]))
 
 (define buffer-line-indices
   (case-lambda
    [() (buffer-line-indices current-buffer)]
-   [(b) ((record-accessor buffer-rtd 6) b)]))
+   [(b) ((record-accessor buffer-rtd 7) b)]))
 
 ;; Setters
 
@@ -109,21 +124,28 @@
    [(v) (buffer-goal-column-set! current-buffer v)]
    [(b v) ((record-mutator buffer-rtd 3) b v)]))
 
-(define buffer-offset-set!
+(define buffer-offset-line-set!
   (case-lambda
-   [(v) (buffer-offset-set! current-buffer v)]
+   [(v) (buffer-offset-line-set! current-buffer v)]
    [(b v) ((record-mutator buffer-rtd 4) b
-           (min-max v 0 (- (vector-length (buffer-line-indices b)) 6)))]))
+           (min-max v 0 (sub1 (vector-length (buffer-line-indices b)))))]))
+
+(define buffer-offset-column-set!
+  (case-lambda
+   [(v) (buffer-offset-column-set! current-buffer v)]
+   [(b v) (let* ([idx (buffer-line-index b (buffer-line b))]
+                 [max (- (cdr idx) (car idx))])
+            ((record-mutator buffer-rtd 5) b (min-max v 0 max)))]))
 
 (define buffer-line-set!
   (case-lambda
    [(v) (buffer-line-set! current-buffer v)]
-   [(b v) ((record-mutator buffer-rtd 5) b v)]))
+   [(b v) ((record-mutator buffer-rtd 6) b v)]))
 
 (define buffer-line-indices-set!
   (case-lambda
    [(v) (buffer-line-indices-set! current-buffer v)]
-   [(b v) ((record-mutator buffer-rtd 6) b v)]))
+   [(b v) ((record-mutator buffer-rtd 7) b v)]))
 
 ;; Helpers
 
@@ -141,7 +163,7 @@
 ;; Start (inclusive) and end (exclusive) index of given line.
 (define buffer-line-index
   (case-lambda
-   [() (buffer-line-index current-buffer (buffer-line))]
+   [() (buffer-line-index current-buffer (buffer-line current-buffer))]
    [(i) (buffer-line-index current-buffer i)]
    [(b i) (let ([ind (buffer-line-indices b)])
             (if (or (< i 0) (>= i (vector-length ind))) #f
@@ -162,4 +184,4 @@
 (define buffer-substring
   (case-lambda
    [(beg end) (buffer-substring current-buffer beg end)]
-   [(b beg end) (substring (buffer-content b) beg end)]))
+   [(b beg end) (safe-substring (buffer-content b) beg end)]))

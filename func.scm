@@ -86,34 +86,51 @@
    [() (backward-line 1)]
    [(n) (goto-line (- (buffer-line) n))]))
 
-;; ------------------
-;; Scrolling (offset)
-;; ------------------
+;; -------------------
+;; Scrolling (offsets)
+;; -------------------
 
-(define advance-offset
+(define set-offset-line
   (lambda (n)
-    (buffer-offset-set! (+ (buffer-offset) n))
+    (buffer-offset-line-set! n)
     (reconcile-by-moving-point)))
 
-(define scroll-line-forward
-  (lambda ()
-    (advance-offset 1)))
+(define set-offset-column
+  (lambda (n)
+    (buffer-offset-column-set! n)
+    (reconcile-by-moving-point)))
 
-(define scroll-line-backward
-  (lambda ()
-    (advance-offset -1)))
+(define scroll-up
+  (case-lambda
+   [() (scroll-up 1)]
+   [(n) (set-offset-line (- (buffer-offset-line) n))]))
 
-(define scroll-page-forward
-  (lambda ()
-    (advance-offset (scroll-page-amount))))
+(define scroll-down
+  (case-lambda
+   [() (scroll-down 1)]
+   [(n) (set-offset-line (+ (buffer-offset-line) n))]))
 
-(define scroll-page-backward
+(define scroll-left
+  (case-lambda
+   [() (scroll-left 1)]
+   [(n) (set-offset-column (- (buffer-offset-column) n))]))
+
+(define scroll-right
+  (case-lambda
+   [() (scroll-right 1)]
+   [(n) (set-offset-column (+ (buffer-offset-column) n))]))
+
+(define scroll-page-up
   (lambda ()
-    (advance-offset (- (scroll-page-amount)))))
+    (scroll-up (scroll-page-amount))))
+
+(define scroll-page-down
+  (lambda ()
+    (scroll-down (scroll-page-amount))))
 
 (define scroll-page-amount
   (lambda ()
-    (- LINES 4)))
+    (- (lines-for-buffer) 2)))
 
 ;; --------
 ;; Deletion
@@ -178,15 +195,45 @@
 ;; ---------
 
 ;; Reconcile point and offset so that point
-;; is always on a visible line. We can reconcile
+;; is always visible. We can reconcile
 ;; either by moving point or offset.
 
-;; Move the point to a visible line.
+;; Move the point to current offsets.
 (define reconcile-by-moving-point
   (lambda ()
-    (debug-log "reconcile-by-moving-point")))
+    (debug-log "reconcile-by-moving-point")
+    (let ([ln (buffer-line)]
+          [cl (buffer-column)]
+          [ofs-ln (buffer-offset-line)]
+          [ofs-cl (buffer-offset-column)])
+      (when (< ln ofs-ln)
+        (debug-log "goto up")
+        (goto-line ofs-ln))
+      (when (> ln (+ ofs-ln (last-line)))
+        (debug-log "goto down")
+        (goto-line (+ ofs-ln (last-line))))
+      (when (< cl ofs-cl)
+        (debug-log "left")
+        (set-point-and-goal (+ (buffer-point) (- ofs-cl cl))))
+      (when (> cl (+ ofs-cl (last-column)))
+        (debug-log "right")
+        (set-point-and-goal (- (buffer-point)
+                               (- cl (+ ofs-cl (last-column))))))
+      )))
 
-;; Scroll the offset to the point.
+;; Change offsets so point is visible.
 (define reconcile-by-scrolling
   (lambda ()
-    (debug-log "reconcile-by-scrolling")))
+    (debug-log "reconcile-by-scrolling")
+    (let ([ln (buffer-line)]
+          [cl (buffer-column)]
+          [ofs-ln (buffer-offset-line)]
+          [ofs-cl (buffer-offset-column)])
+      (when (< ln ofs-ln)
+        (buffer-offset-line-set! ln))
+      (when (> ln (+ ofs-ln (last-line)))
+        (buffer-offset-line-set! (- ln (last-line))))
+      (when (< cl ofs-cl)
+        (buffer-offset-column-set! cl))
+      (when (> cl (+ ofs-cl (last-column)))
+        (buffer-offset-column-set! (- cl (last-column)))))))

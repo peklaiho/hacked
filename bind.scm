@@ -23,15 +23,18 @@
       (lambda () (end-of-buffer))]
 
      ;; Scrolling
-     [(= key (char->integer #\z))
-      (lambda () (scroll-line-backward))]
-     [(= key (char->integer #\x))
-      (lambda () (scroll-line-forward))]
-
+     [(= key (char->integer #\w))
+      (lambda () (scroll-up))]
+     [(= key (char->integer #\s))
+      (lambda () (scroll-down))]
+     [(= key (char->integer #\a))
+      (lambda () (scroll-left))]
+     [(= key (char->integer #\d))
+      (lambda () (scroll-right))]
      [(= key KEY_PPAGE)
-      (lambda () (scroll-page-backward))]
+      (lambda () (scroll-page-up))]
      [(= key KEY_NPAGE)
-      (lambda () (scroll-page-forward))]
+      (lambda () (scroll-page-down))]
 
      ;; Deletion
      [(= key KEY_DC)

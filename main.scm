@@ -48,6 +48,24 @@
      [(> val max) max]
      [else val])))
 
+;; Number of lines reserved for buffer.
+(define lines-for-buffer
+  (lambda ()
+    (- LINES 2)))
+
+;; Number of columns reserver for buffer.
+(define columns-for-buffer
+  (lambda ()
+    COLS))
+
+(define last-line
+  (lambda ()
+    (sub1 (lines-for-buffer))))
+
+(define last-column
+  (lambda ()
+    (sub1 (columns-for-buffer))))
+
  ;; Configure exception handler which closes ncurses
 (with-exception-handler
  (lambda (ex) (endwin) (default-exception-handler ex))
