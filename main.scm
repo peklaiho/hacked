@@ -48,38 +48,43 @@
      [(> val max) max]
      [else val])))
 
-;; Initializion of ncurses is described here:
-;; https://invisible-island.net/ncurses/man/ncurses.3x.html
-(setlocale LC_ALL "")
+ ;; Configure exception handler which closes ncurses
+(with-exception-handler
+ (lambda (ex) (endwin) (default-exception-handler ex))
+ (lambda ()
+   ;; Initializion of ncurses is described here:
+   ;; https://invisible-island.net/ncurses/man/ncurses.3x.html
+   (setlocale LC_ALL "")
 
-;; Check that initscr was successful
-(let ([s (initscr)]) (assert (eq? s stdscr)))
+   ;; Check that initscr was successful
+   (let ([s (initscr)]) (assert (eq? s stdscr)))
 
-;; Turn on keypad so that KEY_RESIZE events are sent
-(keypad stdscr #t)
+   ;; Turn on keypad so that KEY_RESIZE events are sent
+   (keypad stdscr #t)
 
-;; Disable echo, line buffering and interrupt flush
-(noecho)
-(cbreak)
-(intrflush stdscr #f)
+   ;; Disable echo, line buffering and interrupt flush
+   (noecho)
+   (cbreak)
+   (intrflush stdscr #f)
 
-;; Enable color
-(start-color)
-(use-default-colors)
-(assume-default-colors -1 -1)
-(init-pair 1 COLOR_BLACK COLOR_WHITE)
+   ;; Enable color
+   (start-color)
+   (use-default-colors)
+   (assume-default-colors -1 -1)
+   (init-pair 1 COLOR_BLACK COLOR_WHITE)
 
-;; Make a scratch buffer and set it as current
-(set! current-buffer
-      (make-buffer
-       "*scratch*"
-       (read-file "alice.txt")))
+   ;; Make a scratch buffer and set it as current
+   (set! current-buffer
+         (make-buffer
+          "*scratch*"
+          (read-file "alice.txt")))
 
-;; Draw screen
-(draw-screen)
+   ;; Draw screen
+   (draw-screen)
 
-;; Main loop
-(let loop ()
-  (process-input)
-  (draw-screen)
-  (loop))
+   ;; Main loop
+   (let loop ()
+     (process-input)
+     (draw-screen)
+     (loop))
+))

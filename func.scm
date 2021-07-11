@@ -1,61 +1,78 @@
+;; ----
+;; Misc
+;; ----
+
+(define screen-size-changed
+  (lambda ()
+    (set! redraw-screen #t)
+    (reconcile-by-scrolling)))
+
 ;; --------
 ;; Movement
 ;; --------
 
-;; Advance point by n characters.
-;; Negative value to go backwards.
-;; Returns #f if failed, otherwise new point.
-(define advance-point
-  (lambda (n)
-    (let ([pt (+ (buffer-point) n)])
-      (if (or (< pt 0) (> pt (buffer-length))) #f
-          (begin
-            (buffer-point-set! pt)
-            (buffer-goal-column-set! (buffer-column))
-            pt)))))
+;; Helper function for setting point.
+(define set-point
+  (lambda (pt)
+    (if (or (< pt 0) (> pt (buffer-length))) #f
+        (begin
+          (buffer-point-set! pt)
+          (reconcile-by-scrolling)
+          #t))))
+
+;; Set point and also set goal-column.
+(define set-point-and-goal
+  (lambda (pt)
+    (let ([result (set-point pt)])
+      (when result
+        (buffer-goal-column-set! (buffer-column)))
+      result)))
 
 ;; Move point forward one character.
 (define forward-character
   (case-lambda
    [() (forward-character 1)]
-   [(n) (advance-point n)]))
+   [(n) (set-point-and-goal (+ (buffer-point) n))]))
 
 ;; Move point backward one character.
 (define backward-character
   (case-lambda
    [() (backward-character 1)]
-   [(n) (advance-point (- n))]))
+   [(n) (set-point-and-goal (- (buffer-point) n))]))
 
 ;; Move point to beginning of line.
 (define begin-of-line
   (lambda ()
-    (let ([pt (car (buffer-line-index))])
-      (buffer-point-set! pt)
-      (buffer-goal-column-set! (buffer-column))
-      pt)))
+    (let ([line (buffer-line-index)])
+      (set-point-and-goal (car line)))))
 
 ;; Move point to end of line.
 (define end-of-line
   (lambda ()
-    (let ([pt (cdr (buffer-line-index))])
-      (buffer-point-set! pt)
-      (buffer-goal-column-set! (buffer-column))
-      pt)))
+    (let ([line (buffer-line-index)])
+      (set-point-and-goal (cdr line)))))
 
-;; Move point to given line.
-;; Column can be given as second argument. It defaults
-;; to goal-column of the buffer.
-;; Returns the index-pair of the line or #f if not successful.
+;; Move to beginning of buffer.
+(define begin-of-buffer
+  (lambda ()
+    (set-point-and-goal 0)))
+
+;; Move to end of buffer.
+(define end-of-buffer
+  (lambda ()
+    (set-point-and-goal (buffer-length))))
+
+;; Move point to given line and try to move
+;; column to goal-column.
 (define goto-line
-  (case-lambda
-   [(l) (goto-line l (buffer-goal-column))]
-   [(l c)
-    (let ([idx (buffer-line-index current-buffer l)])
-      (if (not idx) #f
-          (begin
-            (buffer-point-set!
-             (min-max (+ (car idx) c) (car idx) (cdr idx)))
-            idx)))]))
+  (lambda (l)
+    (let ([idx (buffer-line-index l)])
+      (when idx
+        (set-point
+         (min-max (+ (car idx) (buffer-goal-column))
+                  (car idx)
+                  (cdr idx))))
+      idx)))
 
 ;; Move point to next line.
 (define forward-line
@@ -70,12 +87,13 @@
    [(n) (goto-line (- (buffer-line) n))]))
 
 ;; ------------------
-;; Offset (scrolling)
+;; Scrolling (offset)
 ;; ------------------
 
 (define advance-offset
   (lambda (n)
-    (buffer-offset-set! (+ (buffer-offset) n))))
+    (buffer-offset-set! (+ (buffer-offset) n))
+    (reconcile-by-moving-point)))
 
 (define scroll-line-forward
   (lambda ()
@@ -87,39 +105,44 @@
 
 (define scroll-page-forward
   (lambda ()
-    (advance-offset 20)))
+    (advance-offset (scroll-page-amount))))
 
 (define scroll-page-backward
   (lambda ()
-    (advance-offset -20)))
+    (advance-offset (- (scroll-page-amount)))))
+
+(define scroll-page-amount
+  (lambda ()
+    (- LINES 4)))
 
 ;; --------
 ;; Deletion
 ;; --------
 
 ;; Delete one character at given index.
-;; Does not check bounds, returns #t.
 (define delete-character
   (lambda (idx)
-    (buffer-content-set!
-     (string-append
-      (buffer-substring 0 idx)
-      (buffer-substring (add1 idx) (buffer-length))))
-    #t))
+    (if (or (< idx 0) (>= idx (buffer-length))) #f
+        (begin
+          (buffer-content-set!
+           (string-append
+            (buffer-substring 0 idx)
+            (buffer-substring (add1 idx) (buffer-length))))
+          #t))))
 
 ;; Delete one character forward.
 (define delete-character-forward
   (lambda ()
-    (if (< (buffer-point) (buffer-length))
-        (delete-character (buffer-point))
-        #f)))
+    (let ([result (delete-character (buffer-point))])
+      result)))
 
 ;; Delete one character backward.
 (define delete-character-backward
   (lambda ()
-    (if (backward-character)
-        (delete-character-forward)
-        #f)))
+    (let ([result (delete-character (sub1 (buffer-point)))])
+      (when result
+        (backward-character))
+      result)))
 
 ;; ---------
 ;; Insertion
@@ -134,8 +157,10 @@
 ;; Insert character and move point forward.
 (define insert-character-forward
   (lambda (ch)
-    (insert-character ch)
-    (forward-character)))
+    (let ([result (insert-character ch)])
+      (when result
+        (forward-character))
+      result)))
 
 ;; Insert string.
 (define insert-string
@@ -147,3 +172,21 @@
       (buffer-substring 0 idx) txt
       (buffer-substring idx (buffer-length))))
     #t]))
+
+;; ---------
+;; Reconcile
+;; ---------
+
+;; Reconcile point and offset so that point
+;; is always on a visible line. We can reconcile
+;; either by moving point or offset.
+
+;; Move the point to a visible line.
+(define reconcile-by-moving-point
+  (lambda ()
+    (debug-log "reconcile-by-moving-point")))
+
+;; Scroll the offset to the point.
+(define reconcile-by-scrolling
+  (lambda ()
+    (debug-log "reconcile-by-scrolling")))

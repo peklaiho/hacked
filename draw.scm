@@ -6,7 +6,7 @@
     (set! redraw-screen #f)
     (draw-buffer)
     (draw-statusbar)
-    (move (buffer-line) (buffer-column))
+    (move (- (buffer-line) (buffer-offset)) (buffer-column))
     (refresh)))
 
 (define draw-buffer
@@ -15,9 +15,9 @@
     (call/cc
      (lambda (break)
        (let loop ([i 0])
-         (when (>= i (- LINES 2))
+         (when (> i (- LINES 3))
            (break i))
-         (let ([line (buffer-line-index current-buffer (+ i (buffer-offset)))])
+         (let ([line (buffer-line-index (+ i (buffer-offset)))])
            (when (not line)
              (break i))
            (let ([content (buffer-substring (car line) (cdr line))])

@@ -17,11 +17,17 @@
      [(= key KEY_END)
       (lambda () (end-of-line))]
 
+     [(= key (char->integer #\<))
+      (lambda () (begin-of-buffer))]
+     [(= key (char->integer #\>))
+      (lambda () (end-of-buffer))]
+
      ;; Scrolling
      [(= key (char->integer #\z))
       (lambda () (scroll-line-backward))]
      [(= key (char->integer #\x))
       (lambda () (scroll-line-forward))]
+
      [(= key KEY_PPAGE)
       (lambda () (scroll-page-backward))]
      [(= key KEY_NPAGE)
@@ -45,6 +51,6 @@
 (define process-input
   (lambda ()
     (let ([key (read-input)])
-      (if (= key KEY_RESIZE) (set! redraw-screen #t)
+      (if (= key KEY_RESIZE) (screen-size-changed)
           (let ([f (binding-for-key key)])
             (if f (f) #f))))))
