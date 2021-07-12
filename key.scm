@@ -70,6 +70,7 @@
         [(= key 10) "<enter>"]
         [(= key 13) "<return>"]
         [(= key 27) "<escape>"]
+        [(= key 32) "<space>"]
         [(= key 127) "<backspace>"]
 
         [(= key KEY_LEFT) "<left>"]
@@ -104,6 +105,7 @@
               [(string=? str "<enter>") 10]
               [(string=? str "<return>") 13]
               [(string=? str "<escape>") 27]
+              [(string=? str "<space>") 32]
               [(string=? str "<backspace>") 127]
 
               [(string=? str "<left>") KEY_LEFT]

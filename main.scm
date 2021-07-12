@@ -69,6 +69,11 @@
   (lambda ()
     (sub1 (columns-for-buffer))))
 
+;; Generate list of integers from i to j (inclusive)
+(define range
+  (lambda (i j)
+    (map (lambda (n) (+ i n)) (iota (add1 (- j i))))))
+
  ;; Configure exception handler which closes ncurses
 (with-exception-handler
  (lambda (ex) (endwin) (default-exception-handler ex))
@@ -83,7 +88,6 @@
    ;; Terminal settings, see:
    ;; https://invisible-island.net/ncurses/man/curs_inopts.3x.html
    (noecho)
-   (nonl)
    (raw)
    (meta stdscr #t)
    (intrflush stdscr #f)
