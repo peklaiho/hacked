@@ -36,19 +36,20 @@
 
 ;; Internal functions
 
-;; Future improvement: current line is likely near the offset-line,
-;; so we could start the search from the offset-line and then
-;; go up or down from there.
+;; Find the current line where the point is on.
+;; Start the search from offset-line because we
+;; are likely to be near that always.
 (define buffer-update-line
   (lambda (b)
     (buffer-line-set! b
       (call/cc
        (lambda (break)
-         (let loop ([l 0])
-           (if (<= (buffer-point b)
-                   (cdr (vector-ref (buffer-line-indices b) l)))
-               (break l)
-               (loop (add1 l)))))))))
+         (let loop ([l (buffer-offset-line b)])
+           (let ([idx (vector-ref (buffer-line-indices b) l)]
+                 [pt (buffer-point b)])
+             (when (< pt (car idx)) (loop (sub1 l)))
+             (when (> pt (cdr idx)) (loop (add1 l)))
+             (break l))))))))
 
 (define buffer-update-line-indices
   (lambda (b)
