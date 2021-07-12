@@ -77,13 +77,14 @@
    ;; Check that initscr was successful
    (let ([s (initscr)]) (assert (eq? s stdscr)))
 
-   ;; Turn on keypad so that KEY_RESIZE events are sent
-   (keypad stdscr #t)
-
-   ;; Disable echo, line buffering and interrupt flush
+   ;; Terminal settings, see:
+   ;; https://invisible-island.net/ncurses/man/curs_inopts.3x.html
    (noecho)
-   (cbreak)
+   (nonl)
+   (raw)
+   (meta stdscr #t)
    (intrflush stdscr #f)
+   (keypad stdscr #t)
 
    ;; Enable color
    (start-color)

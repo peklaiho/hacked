@@ -47,7 +47,7 @@
      ;; Deletion
      [(= key KEY_DC)
       (lambda () (delete-character-forward))]
-     [(or (= key 127) (= key KEY_BACKSPACE))
+     [(or (= key 127))
       (lambda () (delete-character-backward))]
 
      [(= key (char->integer #\q))
