@@ -23,13 +23,13 @@
       (lambda () (end-of-buffer))]
 
      ;; Scrolling
-     [(= key (char->integer #\w))
+     [(= key 567)
       (lambda () (scroll-up))]
-     [(= key (char->integer #\s))
+     [(= key 526)
       (lambda () (scroll-down))]
-     [(= key (char->integer #\a))
+     [(= key 546)
       (lambda () (scroll-left))]
-     [(= key (char->integer #\d))
+     [(= key 561)
       (lambda () (scroll-right))]
 
      [(= key KEY_PPAGE)
