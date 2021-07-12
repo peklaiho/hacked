@@ -21,9 +21,9 @@
          (let ([line (buffer-line-index (+ i (buffer-offset-line)))])
            (when (not line)
              (break i))
-           (let ([content (buffer-substring
-                           (+ (car line) (buffer-offset-column))
-                           (cdr line))])
+           (let* ([start (+ (car line) (buffer-offset-column))]
+                  [end (min (cdr line) (+ start (columns-for-buffer)))]
+                  [content (buffer-substring start end)])
              (mvaddstr i 0 content)
              (loop (add1 i)))))))))
 
