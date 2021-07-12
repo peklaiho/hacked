@@ -8,6 +8,7 @@
 (load "buffer.scm")
 (load "draw.scm")
 (load "func.scm")
+(load "key.scm")
 (load "string.scm")
 
 ;; Open file for debugging
@@ -37,9 +38,11 @@
       content)))
 
 (define exit-program
-  (lambda (exit-code)
+  (case-lambda
+   [() (exit-program 0)]
+   [(exit-code)
     (endwin)
-    (exit exit-code)))
+    (exit exit-code)]))
 
 (define min-max
   (lambda (val min max)
@@ -97,6 +100,9 @@
          (make-buffer
           "*scratch*"
           (read-file "alice.txt")))
+
+   ;; Init bindings
+   (bind-default-keys)
 
    ;; Draw screen
    (draw-screen)
