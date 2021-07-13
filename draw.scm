@@ -24,7 +24,7 @@
          (let ([line (buffer-line-index (+ i (buffer-offset-line)))])
            (when (not line)
              (break i))
-           (let* ([start (+ (car line) (buffer-offset-column))]
+           (let* ([start (min (cdr line) (+ (car line) (buffer-offset-column)))]
                   [end (cdr line)]
                   [content (string-truncate (buffer-substring start end) COLS)])
              (mvaddstr i 0 content)
