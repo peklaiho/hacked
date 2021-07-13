@@ -1,5 +1,7 @@
-(define CTRL_MASK 2048)
-(define ALT_MASK 4096)
+;; Modifier keys
+(define MOD_CTRL 1)
+(define MOD_ALT 2)
+(define MOD_SHIFT 4)
 
 (define parse-control-character
   (lambda (key)
@@ -46,6 +48,58 @@
       (+ raw-key
          (if is-ctrl CTRL_MASK 0)
          (if is-alt ALT_MASK 0)))))
+
+(define try-read-key
+  (lambda ()
+    (call/cc
+     (lambda (err)
+       (with-exception-handler
+        (lambda (ex) (err #f))
+        (lambda () (getch)))))))
+
+(define read-key-nodelay
+  (lambda ()
+    (nodelay stdscr #t)
+    (let ([key (try-read-key)])
+      (nodelay stdscr #f)
+      key)))
+
+(define read-full-key
+  (lambda ()
+    (let ([k1 (getch)])
+      (if (not (= k1 27)) (cons k1 #f)
+          ;; 27 is either ESC or ALT but we have
+          ;; to read second key to find out.
+          (let ([k2 (read-key-nodelay)])
+            (if k2 (cons k2 #t) (cons k1 #f)))))))
+
+(define read-input
+  (lambda ()
+    (let* ([keydata (read-full-key)]
+           [key (car keydata)]
+           [is-alt (cdr keydata)]
+           [keycode (parse-terminal-key key is-alt)])
+      (debug-log (format "KEY    => Octal: ~o, Dec: ~d, Hex: ~x, Ch: ~c, Code: ~d, String: ~a"
+                         key key key (integer->char key)
+                         keycode (keycode->string keycode)))
+        keycode)))
+
+;; Read input, resolve it to a keybinding,
+;; and run the associated function. Called
+;; from main loop.
+(define process-input
+  (lambda ()
+    (let ([keycode (read-input)])
+      (if (= keycode KEY_RESIZE)
+          (screen-size-changed)
+          (let ([bind (resolve-binding keycode)])
+            (if bind
+                (let ([fn (eval (car bind))] [arg (cdr bind)])
+                  (if arg (fn arg) (fn)))
+                (show-on-minibuf
+                 "Key ~a is not bound."
+                 (keycode->string keycode))))))))
+
 
 (define keycode-alt?
   (lambda (key)
