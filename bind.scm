@@ -50,6 +50,9 @@
     (global-set-key (string->keycode "C-a") 'begin-of-line)
     (global-set-key (string->keycode "C-e") 'end-of-line)
 
+    (global-set-key (string->keycode "M-<") 'begin-of-buffer)
+    (global-set-key (string->keycode "M->") 'end-of-buffer)
+
     ;; Scrolling
     (global-set-key (string->keycode "C-<left>") 'scroll-left)
     (global-set-key (string->keycode "C-<right>") 'scroll-right)
