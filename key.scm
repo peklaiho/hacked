@@ -4,8 +4,8 @@
 (define parse-control-character
   (lambda (key)
     (cond
-     ;; Return/Enter
-     [(or (= key 10) (= key 13))
+     ;; Tab/Return/Enter
+     [(or (= key 9) (= key 10) (= key 13))
       (cons #f key)]
 
      ;; C-a to C-z
@@ -67,6 +67,7 @@
        (if (keycode-ctrl? keycode) "C-" "")
        (if (keycode-alt? keycode) "M-" "")
        (cond
+        [(= key 9) "<tab>"]
         [(= key 10) "<enter>"]
         [(= key 13) "<return>"]
         [(= key 27) "<escape>"]
@@ -102,6 +103,7 @@
         (set! str (substring str 2 (string-length str))))
       (let ([key
              (cond
+              [(string=? str "<tab>") 9]
               [(string=? str "<enter>") 10]
               [(string=? str "<return>") 13]
               [(string=? str "<escape>") 27]
