@@ -74,14 +74,41 @@
     (global-set-key (string->keycode "C-d") 'delete-character-forward)
 ))
 
+(define try-read-key
+  (lambda ()
+    (call/cc
+     (lambda (err)
+       (with-exception-handler
+        (lambda (ex) (err #f))
+        (lambda () (getch)))))))
+
+(define read-key-nodelay
+  (lambda ()
+    (nodelay stdscr #t)
+    (let ([key (try-read-key)])
+      (nodelay stdscr #f)
+      key)))
+
+;; Read two keys if necessary to handle ALT.
+(define read-full-key
+  (lambda ()
+    (let ([k1 (getch)])
+      (if (not (= k1 27)) (cons k1 #f)
+          ;; 27 is either ESC or ALT but we have
+          ;; to read second key to find out.
+          (let ([k2 (read-key-nodelay)])
+            (if k2 (cons k2 #t) (cons k1 #f)))))))
+
 (define read-input
   (lambda ()
-    (let ([key (getch)])
-      (let ([keycode (parse-terminal-key key #f)])
-        (debug-log (format "KEY    => Octal: ~o, Dec: ~d, Hex: ~x, Ch: ~c, Code: ~d, String: ~a"
-                           key key key (integer->char key)
-                           keycode (keycode->string keycode)))
-        keycode))))
+    (let* ([keydata (read-full-key)]
+           [key (car keydata)]
+           [alt? (cdr keydata)]
+           [keycode (parse-terminal-key key alt?)])
+      (debug-log (format "KEY    => Octal: ~o, Dec: ~d, Hex: ~x, Ch: ~c, Code: ~d, String: ~a"
+                         key key key (integer->char key)
+                         keycode (keycode->string keycode)))
+        keycode)))
 
 (define process-input
   (lambda ()
