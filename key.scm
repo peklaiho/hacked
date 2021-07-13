@@ -96,10 +96,10 @@
     (let ([is-ctrl #f] [is-alt #f])
       (when (string-starts-with str "C-")
         (set! is-ctrl #t)
-        (set! str (safe-substring str 2)))
+        (set! str (substring str 2 (string-length str))))
       (when (string-starts-with str "M-")
         (set! is-alt #t)
-        (set! str (safe-substring str 2)))
+        (set! str (substring str 2 (string-length str))))
       (let ([key
              (cond
               [(string=? str "<enter>") 10]

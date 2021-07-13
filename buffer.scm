@@ -185,4 +185,4 @@
 (define buffer-substring
   (case-lambda
    [(beg end) (buffer-substring current-buffer beg end)]
-   [(b beg end) (safe-substring (buffer-content b) beg end)]))
+   [(b beg end) (substring (buffer-content b) beg end)]))

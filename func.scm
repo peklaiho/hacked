@@ -1,13 +1,3 @@
-;; ----
-;; Misc
-;; ----
-
-(define screen-size-changed
-  (lambda ()
-    (debug-log (format "RESIZE => Cols: ~d, Lines: ~d" COLS LINES))
-    (set! redraw-screen #t)
-    (reconcile-by-scrolling)))
-
 ;; --------
 ;; Movement
 ;; --------
@@ -220,13 +210,13 @@
           [ofs-cl (buffer-offset-column)])
       (when (< ln ofs-ln)
         (goto-line ofs-ln))
-      (when (> ln (+ ofs-ln (last-line)))
-        (goto-line (+ ofs-ln (last-line))))
+      (when (> ln (+ ofs-ln (last-buffer-line)))
+        (goto-line (+ ofs-ln (last-buffer-line))))
       (when (< cl ofs-cl)
         (set-point-and-goal (+ (buffer-point) (- ofs-cl cl))))
-      (when (> cl (+ ofs-cl (last-column)))
+      (when (> cl (+ ofs-cl (last-buffer-column)))
         (set-point-and-goal (- (buffer-point)
-                               (- cl (+ ofs-cl (last-column)))))))))
+                               (- cl (+ ofs-cl (last-buffer-column)))))))))
 
 ;; Change offsets so point is visible.
 (define reconcile-by-scrolling
@@ -237,9 +227,9 @@
           [ofs-cl (buffer-offset-column)])
       (when (< ln ofs-ln)
         (buffer-offset-line-set! ln))
-      (when (> ln (+ ofs-ln (last-line)))
-        (buffer-offset-line-set! (- ln (last-line))))
+      (when (> ln (+ ofs-ln (last-buffer-line)))
+        (buffer-offset-line-set! (- ln (last-buffer-line))))
       (when (< cl ofs-cl)
         (buffer-offset-column-set! cl))
-      (when (> cl (+ ofs-cl (last-column)))
-        (buffer-offset-column-set! (- cl (last-column)))))))
+      (when (> cl (+ ofs-cl (last-buffer-column)))
+        (buffer-offset-column-set! (- cl (last-buffer-column)))))))

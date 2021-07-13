@@ -8,22 +8,14 @@
   (case-lambda
    [(keycode fname) (global-set-key keycode fname #f)]
    [(keycode fname arg)
-    (when (or (< keycode 128) (> keycode 170))
-      (debug-log (format "BIND   => ~d ~a :: ~a ~s" keycode (keycode->string keycode) fname arg)))
     (hashtable-set! global-key-map keycode (cons fname arg))]))
 
 (define resolve-binding
   (lambda (keycode)
     (let ([bind (hashtable-ref global-key-map keycode #f)])
-      (if bind
-          (debug-log
-           (format
-            "FOUND  => ~d ~a :: ~s"
-            keycode (keycode->string keycode) bind))
-          (debug-log
-           (format
-            "NOBIND => ~d ~a"
-            keycode (keycode->string keycode))))
+      ;; Later we check bindings recursively and also
+      ;; check buffer-local bindings that can override
+      ;; global ones.
       bind)))
 
 (define bind-default-keys
@@ -97,6 +89,9 @@
       (if (= keycode KEY_RESIZE)
           (screen-size-changed)
           (let ([bind (resolve-binding keycode)])
-            (when bind
-              (let ([fn (eval (car bind))] [arg (cdr bind)])
-                (if arg (fn arg) (fn)))))))))
+            (if bind
+                (let ([fn (eval (car bind))] [arg (cdr bind)])
+                  (if arg (fn arg) (fn)))
+                (show-on-minibuf
+                 "Key ~a is not bound."
+                 (keycode->string keycode))))))))

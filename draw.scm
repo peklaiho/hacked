@@ -1,11 +1,14 @@
 (define redraw-screen #t)
 
+(define minibuffer-text "")
+
 (define draw-screen
   (lambda ()
     (if redraw-screen (clear) (erase))
     (set! redraw-screen #f)
     (draw-buffer)
     (draw-statusbar)
+    (draw-minibuffer)
     (move (- (buffer-line) (buffer-offset-line))
           (- (buffer-column) (buffer-offset-column)))
     (refresh)))
@@ -16,14 +19,14 @@
     (call/cc
      (lambda (break)
        (let loop ([i 0])
-         (when (> i (last-line))
+         (when (> i (last-buffer-line))
            (break i))
          (let ([line (buffer-line-index (+ i (buffer-offset-line)))])
            (when (not line)
              (break i))
            (let* ([start (+ (car line) (buffer-offset-column))]
-                  [end (min (cdr line) (+ start (columns-for-buffer)))]
-                  [content (buffer-substring start end)])
+                  [end (cdr line)]
+                  [content (string-truncate (buffer-substring start end) COLS)])
              (mvaddstr i 0 content)
              (loop (add1 i)))))))))
 
@@ -44,4 +47,41 @@
            [fill (- COLS (string-length content))])
       (when (> fill 0)
         (set! content (string-append content (make-string fill #\space))))
-      (mvaddstr (lines-for-buffer) 0 content))))
+      (mvaddstr (statusbar-line) 0 content))))
+
+(define draw-minibuffer
+  (lambda ()
+    (color-set 0 0)
+    (mvaddstr (minibuffer-line) 0 (string-truncate minibuffer-text COLS))
+    (set! minibuffer-text "")))
+
+(define show-on-minibuf
+  (lambda (txt . args)
+    (set! minibuffer-text (apply format txt args))))
+
+(define screen-size-changed
+  (lambda ()
+    (debug-log (format "RESIZE => Cols: ~d, Lines: ~d" COLS LINES))
+    (set! redraw-screen #t)
+    (reconcile-by-scrolling)))
+
+;; Number of lines reserved for buffer.
+(define lines-for-buffer
+  (lambda ()
+    (- LINES 2)))
+
+(define last-buffer-line
+  (lambda ()
+    (- LINES 3)))
+
+(define last-buffer-column
+  (lambda ()
+    (- COLS 1)))
+
+(define statusbar-line
+  (lambda ()
+    (- LINES 2)))
+
+(define minibuffer-line
+  (lambda ()
+    (- LINES 1)))

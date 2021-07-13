@@ -1,16 +1,3 @@
-;; Substring that does not throw exception if
-;; indexes are invalid but returns empty string
-;; instead.
-(define safe-substring
-  (case-lambda
-   [(str start) (safe-substring str start (string-length str))]
-   [(str start end)
-    (if (or (< start 0)
-            (> end (string-length str))
-            (> start end))
-        ""
-        (substring str start end))]))
-
 ;; Find the first occurence of character from string.
 ;; Returns the index of the character or #f if not found.
 ;; Start is the index to search from.
@@ -56,4 +43,10 @@
 
 (define string-starts-with
   (lambda (str start)
-    (string=? (safe-substring str 0 (string-length start)) start)))
+    (if (< (string-length str) (string-length start)) #f
+        (string=? (substring str 0 (string-length start)) start))))
+
+(define string-truncate
+  (lambda (str n)
+    (if (<= (string-length str) n) str
+        (substring str 0 n))))
