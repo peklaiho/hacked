@@ -67,6 +67,7 @@
    ;; Terminal settings, see:
    ;; https://invisible-island.net/ncurses/man/curs_inopts.3x.html
    (noecho)
+   (nonl)
    (raw)
    (meta stdscr #t)
    (intrflush stdscr #f)

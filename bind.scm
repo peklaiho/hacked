@@ -52,6 +52,8 @@
 
     (global-set-key (string->keycode "M-<") 'begin-of-buffer)
     (global-set-key (string->keycode "M->") 'end-of-buffer)
+    (global-set-key (string->keycode "C-<home>") 'begin-of-buffer)
+    (global-set-key (string->keycode "C-<end>") 'end-of-buffer)
 
     ;; Scrolling
     (global-set-key (string->keycode "C-<left>") 'scroll-left)
@@ -76,3 +78,18 @@
     (global-set-key (string->keycode "<delete>") 'delete-character-forward)
     (global-set-key (string->keycode "C-d") 'delete-character-forward)
 ))
+
+;; Read input, resolve it to a keybinding, and run the
+;; associated function. Called from main loop.
+(define process-input
+  (lambda ()
+    (let ([keycode (read-input)])
+      (if (= keycode KEY_RESIZE)
+          (screen-size-changed)
+          (let ([bind (resolve-binding keycode)])
+            (if bind
+                (let ([fn (eval (car bind))] [arg (cdr bind)])
+                  (if arg (fn arg) (fn)))
+                (show-on-minibuf
+                 "Key ~a is not bound."
+                 (keycode->string keycode))))))))
