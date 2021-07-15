@@ -9,6 +9,7 @@
 (load "draw.scm")
 (load "func.scm")
 (load "key.scm")
+(load "pregexp.scm")
 (load "string.scm")
 
 ;; Open file for debugging
