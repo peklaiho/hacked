@@ -1,28 +1,71 @@
-;; Find the first occurence of character from string.
-;; Returns the index of the character or #f if not found.
-;; Start is the index to search from.
-(define string-find-first
-  (lambda (str ch start)
+;; Return the Unicode major category of character:
+;; #\L for Letter
+;; #\M for Mark
+;; #\N for Number
+;; #\P for Punctuation
+;; #\S for Symbol
+;; #\Z for Separator
+;; #\C for Other
+(define char-major-category
+  (lambda (ch)
+    (string-ref (symbol->string (char-general-category ch)) 0)))
+
+(define char-alphanumeric?
+  (lambda (ch)
+    (or (char-alphabetic? ch)
+        (char-numeric? ch))))
+
+(define word-boundary
+  (list (lambda (a) (char-alphanumeric? a))
+        (lambda (a) (not (char-alphanumeric? a)))))
+
+;; Find first occurence of character that matches predicate p.
+(define string-find-char-forward-p
+  (lambda (str p start)
     (call/cc
      (lambda (break)
        (let loop ([i start] [len (string-length str)])
          (cond
           [(>= i len) (break #f)]
-          [(equal? (string-ref str i) ch) (break i)]
+          [(p (string-ref str i)) (break i)]
           [else (loop (add1 i) len)]))))))
 
-;; Find the last occurence of character from string.
-;; Returns the index of the character or #f if not found.
-;; Start is the index to search from.
-(define string-find-last
-  (lambda (str ch start)
+;; Find last occurence of character that matches predicate p.
+(define string-find-char-backward-p
+  (lambda (str p start)
     (call/cc
      (lambda (break)
        (let loop ([i start])
          (cond
           [(< i 0) (break #f)]
-          [(equal? (string-ref str i) ch) (break i)]
+          [(p (string-ref str i)) (break i)]
           [else (loop (sub1 i))]))))))
+
+;; Find the first occurence of character from string.
+;; Returns the index of the character or #f if not found.
+;; Start is the index to search from.
+(define string-find-char-forward
+  (lambda (str ch start)
+    (string-find-char-forward-p
+     str (lambda (a) (char=? ch a)) start)))
+
+;; Find the last occurence of character from string.
+;; Returns the index of the character or #f if not found.
+;; Start is the index to search from.
+(define string-find-char-backward
+  (lambda (str ch start)
+    (string-find-char-backward-p
+     str (lambda (a) (char=? ch a)) start)))
+
+;; Match predicates in order to each character.
+(define string-find-char-sequence
+  (lambda (str preds idx idx-fn)
+    (cond
+     [(null? preds) #t]
+     [(or (< idx 0) (>= idx (string-length str))) #f]
+     [((car preds) (string-ref str idx))
+      (string-find-char-sequence str (cdr preds) (idx-fn idx) idx-fn)]
+     [else #f])))
 
 ;; Split string by character and return the substrings as a list.
 (define string-split
@@ -34,11 +77,11 @@
 ;; of the substrings as pairs.
 (define string-split-index
   (lambda (str ch)
-    (let loop ([start (string-find-last str ch (sub1 (string-length str)))]
+    (let loop ([start (string-find-char-backward str ch (sub1 (string-length str)))]
                [end (string-length str)]
                [results '()])
       (if (not start) (cons (cons 0 end) results)
-          (loop (string-find-last str ch (sub1 start)) start
+          (loop (string-find-char-backward str ch (sub1 start)) start
                 (cons (cons (add1 start) end) results))))))
 
 (define string-starts-with

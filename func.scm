@@ -31,6 +31,22 @@
    [() (backward-character 1)]
    [(n) (set-point-and-goal (- (buffer-point) n))]))
 
+;; Move point to end of next word.
+(define forward-word
+  (case-lambda
+   [() (forward-word 1)]
+   [(n) (let ([i (buffer-find-char-seq word-boundary #t)])
+          (if i (set-point-and-goal (add1 i))
+              (end-of-buffer)))]))
+
+;; Move point to beginning of previous word.
+(define backward-word
+  (case-lambda
+   [() (backward-word 1)]
+   [(n) (let ([i (buffer-find-char-seq word-boundary #f)])
+          (if i (set-point-and-goal i)
+              (begin-of-buffer)))]))
+
 ;; Move point to beginning of line.
 (define begin-of-line
   (lambda ()

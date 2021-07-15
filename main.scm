@@ -83,7 +83,7 @@
    (set! current-buffer
          (make-buffer
           "*scratch*"
-          (read-file "alice.txt")))
+          (read-file "bob.txt")))
 
    ;; Init bindings
    (bind-default-keys)

@@ -160,7 +160,7 @@
 
 (define keycode-mod?
   (lambda (key mod)
-    (not (eq? (bitwise-and key mod) 0))))
+    (not (= (bitwise-and key mod) 0))))
 
 (define keycode-base-value
   (lambda (key)

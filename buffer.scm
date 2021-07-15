@@ -182,6 +182,20 @@
    [() (buffer-line-index-next current-buffer)]
    [(b) (buffer-line-index (add1 (buffer-line b)) b)]))
 
+;; Find a sequence of characters that satisfy
+;; the given predicates in order.
+(define buffer-find-char-seq
+  (case-lambda
+   [(preds fw) (buffer-find-char-seq current-buffer preds fw)]
+   [(b preds fw)
+    (let ([fn (if fw add1 sub1)])
+      (let loop ([i (fn (buffer-point b))])
+       (cond
+        [(or (< i 0) (>= i (buffer-length b))) #f]
+        [(string-find-char-sequence
+          (buffer-content b) preds i fn) i]
+        [else (loop (fn i))])))]))
+
 (define buffer-substring
   (case-lambda
    [(beg end) (buffer-substring current-buffer beg end)]

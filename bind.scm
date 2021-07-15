@@ -1,6 +1,6 @@
 (define make-key-map
   (lambda ()
-    (make-hashtable (lambda (a) a) eq?)))
+    (make-hashtable (lambda (a) a) =)))
 
 (define global-key-map (make-key-map))
 
@@ -45,6 +45,8 @@
 
     (global-set-key (string->keycode "C-b") 'backward-character)
     (global-set-key (string->keycode "C-f") 'forward-character)
+    (global-set-key (string->keycode "M-b") 'backward-word)
+    (global-set-key (string->keycode "M-f") 'forward-word)
     (global-set-key (string->keycode "C-p") 'backward-line)
     (global-set-key (string->keycode "C-n") 'forward-line)
     (global-set-key (string->keycode "C-a") 'begin-of-line)
@@ -60,18 +62,13 @@
     (global-set-key (string->keycode "C-<right>") 'scroll-right)
     (global-set-key (string->keycode "C-<up>") 'scroll-up)
     (global-set-key (string->keycode "C-<down>") 'scroll-down)
-
+    (global-set-key (string->keycode "C-l") 'scroll-current-line-middle)
     (global-set-key (string->keycode "<prior>") 'scroll-page-up)
     (global-set-key (string->keycode "<next>") 'scroll-page-down)
-
-    (global-set-key (string->keycode "C-<prior>") 'scroll-current-line-bottom)
-    (global-set-key (string->keycode "C-<next>") 'scroll-current-line-top)
-    (global-set-key (string->keycode "C-l") 'scroll-current-line-middle)
 
     ;; Editing
     (global-set-key (string->keycode "<enter>") 'insert-character-forward #\newline)
     (global-set-key (string->keycode "<return>") 'insert-character-forward #\newline)
-
     (global-set-key (string->keycode "<space>") 'insert-character-forward #\space)
 
     (global-set-key (string->keycode "<backspace>") 'delete-character-backward)
