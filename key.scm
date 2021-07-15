@@ -111,8 +111,8 @@
       (let ([keycode (bitwise-ior
                       (car keydata) (cdr keydata)
                       (if is-alt MOD_ALT 0))])
-        (debug-log (format "KEY: ~d, Alt: ~d, Name: ~a, Code: ~d, String: ~a"
-                           raw-key (if is-alt 1 0) (keyname raw-key)
+        (debug-log (format "KEY: ~d, Alt: ~d, Code: ~d, String: ~a"
+                           raw-key (if is-alt 1 0)
                            keycode (keycode->string keycode)))
         keycode))))
 
