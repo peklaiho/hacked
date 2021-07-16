@@ -35,7 +35,8 @@
 (define forward-word
   (case-lambda
    [() (forward-word 1)]
-   [(n) (let ([i (buffer-find-char-seq word-boundary #t)])
+   [(n) (let ([i (string-find-char-sequence (buffer-content)
+                  word-boundary (buffer-point) #t)])
           (if i (set-point-and-goal (add1 i))
               (end-of-buffer)))]))
 
@@ -43,7 +44,8 @@
 (define backward-word
   (case-lambda
    [() (backward-word 1)]
-   [(n) (let ([i (buffer-find-char-seq word-boundary #f)])
+   [(n) (let ([i (string-find-char-sequence (buffer-content)
+                  word-boundary (sub1 (buffer-point)) #f)])
           (if i (set-point-and-goal i)
               (begin-of-buffer)))]))
 

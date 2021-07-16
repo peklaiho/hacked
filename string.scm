@@ -58,14 +58,23 @@
      str (lambda (a) (char=? ch a)) start)))
 
 ;; Match predicates in order to each character.
-(define string-find-char-sequence
+(define string-match-char-sequence
   (lambda (str preds idx idx-fn)
     (cond
      [(null? preds) #t]
      [(or (< idx 0) (>= idx (string-length str))) #f]
      [((car preds) (string-ref str idx))
-      (string-find-char-sequence str (cdr preds) (idx-fn idx) idx-fn)]
+      (string-match-char-sequence str (cdr preds) (idx-fn idx) idx-fn)]
      [else #f])))
+
+(define string-find-char-sequence
+  (lambda (str preds start fw)
+    (let ([fn (if fw add1 sub1)])
+      (let loop ([i start])
+       (cond
+        [(or (< i 0) (>= i (string-length str))) #f]
+        [(string-match-char-sequence str preds i fn) i]
+        [else (loop (fn i))])))))
 
 ;; Split string by character and return the substrings as a list.
 (define string-split
