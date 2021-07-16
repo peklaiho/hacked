@@ -45,12 +45,17 @@
 
     (global-set-key (string->keycode "C-b") 'backward-character)
     (global-set-key (string->keycode "C-f") 'forward-character)
-    (global-set-key (string->keycode "M-b") 'backward-word)
-    (global-set-key (string->keycode "M-f") 'forward-word)
     (global-set-key (string->keycode "C-p") 'backward-line)
     (global-set-key (string->keycode "C-n") 'forward-line)
     (global-set-key (string->keycode "C-a") 'begin-of-line)
     (global-set-key (string->keycode "C-e") 'end-of-line)
+
+    (global-set-key (string->keycode "M-b") 'backward-word)
+    (global-set-key (string->keycode "M-f") 'forward-word)
+    (global-set-key (string->keycode "M-p") 'backward-paragraph)
+    (global-set-key (string->keycode "M-n") 'forward-paragraph)
+    (global-set-key (string->keycode "M-{") 'backward-paragraph)
+    (global-set-key (string->keycode "M-}") 'forward-paragraph)
 
     (global-set-key (string->keycode "M-<") 'begin-of-buffer)
     (global-set-key (string->keycode "M->") 'end-of-buffer)

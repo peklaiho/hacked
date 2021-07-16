@@ -31,29 +31,49 @@
    [() (backward-character 1)]
    [(n) (set-point-and-goal (- (buffer-point) n))]))
 
+(define forward-to-boundary
+  (lambda (boundary)
+    (let ([i (string-find-char-sequence
+              (buffer-content)
+              boundary (buffer-point) #t)])
+      (if i (set-point-and-goal (add1 i))
+          (end-of-buffer)))))
+
+(define backward-to-boundary
+  (lambda (boundary)
+    (let ([i (string-find-char-sequence
+              (buffer-content)
+              boundary (sub1 (buffer-point)) #f)])
+      (if i (set-point-and-goal i)
+          (begin-of-buffer)))))
+
 ;; Move point to end of next word.
 (define forward-word
   (case-lambda
    [() (forward-word 1)]
    [(n) (repeat-times
-         (lambda ()
-           (let ([i (string-find-char-sequence
-                     (buffer-content)
-                     word-boundary (buffer-point) #t)])
-             (if i (set-point-and-goal (add1 i))
-                 (end-of-buffer)))) n)]))
+         (lambda () (forward-to-boundary word-boundary)) n)]))
 
 ;; Move point to beginning of previous word.
 (define backward-word
   (case-lambda
    [() (backward-word 1)]
    [(n) (repeat-times
-         (lambda ()
-           (let ([i (string-find-char-sequence
-                     (buffer-content)
-                     word-boundary (sub1 (buffer-point)) #f)])
-             (if i (set-point-and-goal i)
-                 (begin-of-buffer)))) n)]))
+         (lambda () (backward-to-boundary word-boundary)) n)]))
+
+;; Move point to next blank line.
+(define forward-paragraph
+  (case-lambda
+   [() (forward-paragraph 1)]
+   [(n) (repeat-times
+         (lambda () (forward-to-boundary paragraph-boundary)) n)]))
+
+;; Move point to previous blank line.
+(define backward-paragraph
+  (case-lambda
+   [() (backward-paragraph 1)]
+   [(n) (repeat-times
+         (lambda () (backward-to-boundary paragraph-boundary)) n)]))
 
 ;; Move point to beginning of line.
 (define begin-of-line
