@@ -175,8 +175,11 @@
 ;; Delete one character backward.
 (define delete-character-backward
   (lambda ()
-    (let ([result (delete-character (sub1 (buffer-point)))])
-      (when result
+    (let* ([pt-before (buffer-point)]
+           [result (delete-character (sub1 (buffer-point)))])
+      ;; Move back only if point is same as before
+      ;; (was not moved already by the delete operation).
+      (when (and result (= pt-before (buffer-point)))
         (backward-character))
       result)))
 

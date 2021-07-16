@@ -111,7 +111,9 @@
    [(v) (buffer-content-set! current-buffer v)]
    [(b v) ((record-mutator buffer-rtd 1) b v)
     (buffer-update-line-indices b)
-    (buffer-update-line b)]))
+    ;; Check point is inside bounds and call
+    ;; buffer-update-line also.
+    (buffer-point-set! b (buffer-point b))]))
 
 (define buffer-point-set!
   (case-lambda
