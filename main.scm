@@ -54,6 +54,15 @@
   (lambda (i j)
     (map (lambda (n) (+ i n)) (iota (add1 (- j i))))))
 
+;; Repeat function n times
+(define repeat-times
+  (lambda (f n)
+    (cond
+     [(<= n 0) #f]
+     [(= n 1) (f)]
+     [else (f)
+           (repeat-times f (sub1 n))])))
+
  ;; Configure exception handler which closes ncurses
 (with-exception-handler
  (lambda (ex) (endwin) (default-exception-handler ex))

@@ -35,19 +35,25 @@
 (define forward-word
   (case-lambda
    [() (forward-word 1)]
-   [(n) (let ([i (string-find-char-sequence (buffer-content)
-                  word-boundary (buffer-point) #t)])
-          (if i (set-point-and-goal (add1 i))
-              (end-of-buffer)))]))
+   [(n) (repeat-times
+         (lambda ()
+           (let ([i (string-find-char-sequence
+                     (buffer-content)
+                     word-boundary (buffer-point) #t)])
+             (if i (set-point-and-goal (add1 i))
+                 (end-of-buffer)))) n)]))
 
 ;; Move point to beginning of previous word.
 (define backward-word
   (case-lambda
    [() (backward-word 1)]
-   [(n) (let ([i (string-find-char-sequence (buffer-content)
-                  word-boundary (sub1 (buffer-point)) #f)])
-          (if i (set-point-and-goal i)
-              (begin-of-buffer)))]))
+   [(n) (repeat-times
+         (lambda ()
+           (let ([i (string-find-char-sequence
+                     (buffer-content)
+                     word-boundary (sub1 (buffer-point)) #f)])
+             (if i (set-point-and-goal i)
+                 (begin-of-buffer)))) n)]))
 
 ;; Move point to beginning of line.
 (define begin-of-line
