@@ -67,9 +67,13 @@
     (global-set-key (string->keycode "C-<right>") 'scroll-right)
     (global-set-key (string->keycode "C-<up>") 'scroll-up)
     (global-set-key (string->keycode "C-<down>") 'scroll-down)
-    (global-set-key (string->keycode "C-l") 'scroll-current-line-middle)
+
     (global-set-key (string->keycode "<prior>") 'scroll-page-up)
     (global-set-key (string->keycode "<next>") 'scroll-page-down)
+
+    (global-set-key (string->keycode "M-v") 'scroll-page-up)
+    (global-set-key (string->keycode "C-v") 'scroll-page-down)
+    (global-set-key (string->keycode "C-l") 'scroll-current-line-middle)
 
     ;; Editing
     (global-set-key (string->keycode "<enter>") 'insert-character-forward #\newline)
