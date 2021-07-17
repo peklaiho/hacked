@@ -254,7 +254,6 @@
 
 (define delete-string
   (lambda (start end)
-    (debug-log (format "~d ~d" start end))
     (when (< start 0) (set! start 0))
     (when (> end (buffer-length)) (set! end (buffer-length)))
     (set-content
