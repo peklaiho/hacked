@@ -61,7 +61,6 @@
 
 (define screen-size-changed
   (lambda ()
-    (debug-log (format "RESIZE => Cols: ~d, Lines: ~d" COLS LINES))
     (set! redraw-screen #t)
     (reconcile-by-scrolling)))
 

@@ -158,4 +158,5 @@
     (global-set-key (string->keycodes "<backspace>") 'delete-character-backward)
     (global-set-key (string->keycodes "<delete>") 'delete-character-forward)
     (global-set-key (string->keycodes "C-d") 'delete-character-forward)
+    (global-set-key (string->keycodes "C-k") 'delete-rest-of-line)
 ))

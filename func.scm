@@ -1,8 +1,11 @@
-;; --------
-;; Movement
-;; --------
+;; -------
+;; Setters
+;; -------
 
-;; Helper function for setting point.
+;; Other functions in this file use these functions
+;; to set new location for point or new content
+;; for the buffer.
+
 (define set-point
   (lambda (pt)
     (if (or (< pt 0) (> pt (buffer-length))) #f
@@ -11,13 +14,75 @@
           (reconcile-by-scrolling)
           #t))))
 
-;; Set point and also set goal-column.
 (define set-point-and-goal
   (lambda (pt)
     (let ([result (set-point pt)])
       (when result
         (buffer-goal-column-set! (buffer-column)))
       result)))
+
+(define set-content
+  (lambda (content)
+    (buffer-content-set! content)
+    (reconcile-by-scrolling)
+    #t))
+
+(define set-offset-line
+  (lambda (n)
+    (buffer-offset-line-set! n)
+    (reconcile-by-moving-point)))
+
+(define set-offset-column
+  (lambda (n)
+    (buffer-offset-column-set! n)
+    (reconcile-by-moving-point)))
+
+;; ---------
+;; Reconcile
+;; ---------
+
+;; After moving the point or changing the
+;; content of the buffer, it is possible
+;; the point is no longer visible on the screen.
+;;
+;; We must reconcile point and scroll offset so
+;; the point is visible again. We can reconcile
+;; either by moving point or offset.
+
+(define reconcile-by-moving-point
+  (lambda ()
+    (let ([ln (buffer-line)]
+          [cl (buffer-column)]
+          [ofs-ln (buffer-offset-line)]
+          [ofs-cl (buffer-offset-column)])
+      (when (< ln ofs-ln)
+        (goto-line ofs-ln))
+      (when (> ln (+ ofs-ln (last-buffer-line)))
+        (goto-line (+ ofs-ln (last-buffer-line))))
+      (when (< cl ofs-cl)
+        (set-point-and-goal (+ (buffer-point) (- ofs-cl cl))))
+      (when (> cl (+ ofs-cl (last-buffer-column)))
+        (set-point-and-goal (- (buffer-point)
+                               (- cl (+ ofs-cl (last-buffer-column)))))))))
+
+(define reconcile-by-scrolling
+  (lambda ()
+    (let ([ln (buffer-line)]
+          [cl (buffer-column)]
+          [ofs-ln (buffer-offset-line)]
+          [ofs-cl (buffer-offset-column)])
+      (when (< ln ofs-ln)
+        (buffer-offset-line-set! ln))
+      (when (> ln (+ ofs-ln (last-buffer-line)))
+        (buffer-offset-line-set! (- ln (last-buffer-line))))
+      (when (< cl ofs-cl)
+        (buffer-offset-column-set! cl))
+      (when (> cl (+ ofs-cl (last-buffer-column)))
+        (buffer-offset-column-set! (- cl (last-buffer-column)))))))
+
+;; --------
+;; Movement
+;; --------
 
 ;; Move point forward one character.
 (define forward-character
@@ -139,16 +204,6 @@
 ;; Scrolling (offsets)
 ;; -------------------
 
-(define set-offset-line
-  (lambda (n)
-    (buffer-offset-line-set! n)
-    (reconcile-by-moving-point)))
-
-(define set-offset-column
-  (lambda (n)
-    (buffer-offset-column-set! n)
-    (reconcile-by-moving-point)))
-
 (define scroll-up
   (case-lambda
    [() (scroll-up 1)]
@@ -197,22 +252,25 @@
 ;; Deletion
 ;; --------
 
+(define delete-string
+  (lambda (start end)
+    (debug-log (format "~d ~d" start end))
+    (when (< start 0) (set! start 0))
+    (when (> end (buffer-length)) (set! end (buffer-length)))
+    (set-content
+     (string-append
+      (buffer-substring 0 start)
+      (buffer-substring end (buffer-length))))))
+
 ;; Delete one character at given index.
 (define delete-character
   (lambda (idx)
-    (if (or (< idx 0) (>= idx (buffer-length))) #f
-        (begin
-          (buffer-content-set!
-           (string-append
-            (buffer-substring 0 idx)
-            (buffer-substring (add1 idx) (buffer-length))))
-          #t))))
+    (delete-string idx (add1 idx))))
 
 ;; Delete one character forward.
 (define delete-character-forward
   (lambda ()
-    (let ([result (delete-character (buffer-point))])
-      result)))
+    (delete-character (buffer-point))))
 
 ;; Delete one character backward.
 (define delete-character-backward
@@ -224,6 +282,13 @@
       (when (and result (= pt-before (buffer-point)))
         (backward-character))
       result)))
+
+(define delete-rest-of-line
+  (lambda ()
+    (let ([start (buffer-point)]
+          [end (cdr (buffer-line-index))])
+      ;; Add 1 when at the end of line to delete the linebreak.
+      (delete-string start (if (= start end) (add1 end) end)))))
 
 ;; ---------
 ;; Insertion
@@ -248,49 +313,7 @@
   (case-lambda
    [(txt) (insert-string txt (buffer-point))]
    [(txt idx)
-    (buffer-content-set!
+    (set-content
      (string-append
       (buffer-substring 0 idx) txt
-      (buffer-substring idx (buffer-length))))
-    #t]))
-
-;; ---------
-;; Reconcile
-;; ---------
-
-;; Reconcile point and offset so that point
-;; is always visible. We can reconcile
-;; either by moving point or offset.
-
-;; Move the point to current offsets.
-(define reconcile-by-moving-point
-  (lambda ()
-    (let ([ln (buffer-line)]
-          [cl (buffer-column)]
-          [ofs-ln (buffer-offset-line)]
-          [ofs-cl (buffer-offset-column)])
-      (when (< ln ofs-ln)
-        (goto-line ofs-ln))
-      (when (> ln (+ ofs-ln (last-buffer-line)))
-        (goto-line (+ ofs-ln (last-buffer-line))))
-      (when (< cl ofs-cl)
-        (set-point-and-goal (+ (buffer-point) (- ofs-cl cl))))
-      (when (> cl (+ ofs-cl (last-buffer-column)))
-        (set-point-and-goal (- (buffer-point)
-                               (- cl (+ ofs-cl (last-buffer-column)))))))))
-
-;; Change offsets so point is visible.
-(define reconcile-by-scrolling
-  (lambda ()
-    (let ([ln (buffer-line)]
-          [cl (buffer-column)]
-          [ofs-ln (buffer-offset-line)]
-          [ofs-cl (buffer-offset-column)])
-      (when (< ln ofs-ln)
-        (buffer-offset-line-set! ln))
-      (when (> ln (+ ofs-ln (last-buffer-line)))
-        (buffer-offset-line-set! (- ln (last-buffer-line))))
-      (when (< cl ofs-cl)
-        (buffer-offset-column-set! cl))
-      (when (> cl (+ ofs-cl (last-buffer-column)))
-        (buffer-offset-column-set! (- cl (last-buffer-column)))))))
+      (buffer-substring idx (buffer-length))))]))
