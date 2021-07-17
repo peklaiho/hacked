@@ -125,6 +125,8 @@
 
     (global-set-key (string->keycodes "M-b") 'backward-word)
     (global-set-key (string->keycodes "M-f") 'forward-word)
+    (global-set-key (string->keycodes "M-a") 'backward-sentence)
+    (global-set-key (string->keycodes "M-e") 'forward-sentence)
     (global-set-key (string->keycodes "M-p") 'backward-paragraph)
     (global-set-key (string->keycodes "M-n") 'forward-paragraph)
     (global-set-key (string->keycodes "M-{") 'backward-paragraph)

@@ -3,9 +3,19 @@
     (or (char-alphabetic? ch)
         (char-numeric? ch))))
 
+(define char-punctuation?
+  (lambda (ch)
+    (or (char=? ch #\.)
+        (char=? ch #\!)
+        (char=? ch #\?))))
+
 (define word-boundary
   (list (lambda (a) (char-alphanumeric? a))
         (lambda (a) (not (char-alphanumeric? a)))))
+
+(define sentence-boundary
+  (list (lambda (a) (char-punctuation? a))
+        (lambda (a) (not (char-punctuation? a)))))
 
 (define paragraph-boundary
   (let ([f (lambda (a) (char=? a #\newline))])

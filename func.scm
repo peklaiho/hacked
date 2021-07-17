@@ -61,6 +61,20 @@
    [(n) (repeat-times
          (lambda () (backward-to-boundary word-boundary)) n)]))
 
+;; Move point to end of sentence.
+(define forward-sentence
+  (case-lambda
+   [() (forward-sentence 1)]
+   [(n) (repeat-times
+         (lambda () (forward-to-boundary sentence-boundary)) n)]))
+
+;; Move point to beginning of sentence.
+(define backward-sentence
+  (case-lambda
+   [() (backward-sentence 1)]
+   [(n) (repeat-times
+         (lambda () (backward-to-boundary (reverse sentence-boundary))) n)]))
+
 ;; Move point to next blank line.
 (define forward-paragraph
   (case-lambda
