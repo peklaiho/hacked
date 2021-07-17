@@ -3,6 +3,8 @@
 (define MOD_ALT (bitwise-arithmetic-shift 1 30))
 (define MOD_SHIFT (bitwise-arithmetic-shift 1 31))
 
+(define quit-key (bitwise-ior (char->integer #\g) MOD_CTRL))
+
 ;; --------------------------------------
 ;; Parse raw key from terminal to keycode
 ;; --------------------------------------
@@ -204,6 +206,15 @@
         [else (string (integer->char key))]
     )))))
 
+(define keycodes->string
+  (lambda (keycodes)
+    (cond
+     [(null? keycodes) ""]
+     [(= (length keycodes) 1) (keycode->string (car keycodes))]
+     [else (string-append
+            (keycode->string (car keycodes)) " "
+            (keycodes->string (cdr keycodes)))])))
+
 (define string->keycode
   (lambda (str)
     (let ([mods 0])
@@ -253,3 +264,7 @@
 
           [else (char->integer (string-ref str 0))])])
         (bitwise-ior key mods)))))
+
+(define string->keycodes
+  (lambda (str)
+    (map string->keycode (string-split str #\space))))
