@@ -172,18 +172,6 @@
             (if (or (< i 0) (>= i (vector-length ind))) #f
                 (vector-ref ind i)))]))
 
-;; Indexes of the previous line or #f.
-(define buffer-line-index-prev
-  (case-lambda
-   [() (buffer-line-index-prev current-buffer)]
-   [(b) (buffer-line-index (sub1 (buffer-line b)) b)]))
-
-;; Indexes of the next line or #f.
-(define buffer-line-index-next
-  (case-lambda
-   [() (buffer-line-index-next current-buffer)]
-   [(b) (buffer-line-index (add1 (buffer-line b)) b)]))
-
 (define buffer-substring
   (case-lambda
    [(beg end) (buffer-substring current-buffer beg end)]

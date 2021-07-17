@@ -1,15 +1,3 @@
-;; Return the Unicode major category of character:
-;; #\L for Letter
-;; #\M for Mark
-;; #\N for Number
-;; #\P for Punctuation
-;; #\S for Symbol
-;; #\Z for Separator
-;; #\C for Other
-(define char-major-category
-  (lambda (ch)
-    (string-ref (symbol->string (char-general-category ch)) 0)))
-
 (define char-alphanumeric?
   (lambda (ch)
     (or (char-alphabetic? ch)

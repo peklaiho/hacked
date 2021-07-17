@@ -8,60 +8,12 @@
 (load "buffer.scm")
 (load "draw.scm")
 (load "func.scm")
+(load "io.scm")
 (load "key.scm")
 (load "pregexp.scm")
+(load "signal.scm")
 (load "string.scm")
-
-;; Open file for debugging
-(define debug-file
-  (open-file-output-port
-   "~/debug.txt"
-   (file-options no-fail)
-   (buffer-mode none)
-   (make-transcoder (utf-8-codec))))
-
-;; Define some utility functions
-(define debug-log
-  (lambda (obj)
-    (write obj debug-file)
-    (newline debug-file)
-    (flush-output-port debug-file)))
-
-(define read-file
-  (lambda (filename)
-    (let* ([f (open-file-input-port
-               filename
-               (file-options)
-               (buffer-mode block)
-               (make-transcoder (utf-8-codec)))]
-           [content (get-string-all f)])
-      (close-port f)
-      content)))
-
-(define exit-program
-  (case-lambda
-   [() (exit-program 0)]
-   [(exit-code)
-    (endwin)
-    (exit exit-code)]))
-
-(define min-max
-  (lambda (value minimum maximum)
-    (min (max value minimum) maximum)))
-
-;; Generate list of integers from i to j (inclusive)
-(define range
-  (lambda (i j)
-    (map (lambda (n) (+ i n)) (iota (add1 (- j i))))))
-
-;; Repeat function n times
-(define repeat-times
-  (lambda (f n)
-    (cond
-     [(<= n 0) #f]
-     [(= n 1) (f)]
-     [else (f)
-           (repeat-times f (sub1 n))])))
+(load "util.scm")
 
  ;; Configure exception handler which closes ncurses
 (with-exception-handler
@@ -92,7 +44,7 @@
    (set! current-buffer
          (make-buffer
           "*scratch*"
-          (read-file "bob.txt")))
+          (read-file "~/alice.txt")))
 
    ;; Init bindings
    (bind-default-keys)
