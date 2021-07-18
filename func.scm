@@ -316,3 +316,18 @@
      (string-append
       (buffer-substring 0 idx) txt
       (buffer-substring idx (buffer-length))))]))
+
+;; -----
+;; Files
+;; -----
+
+(define open-file
+  (case-lambda
+   [()
+    (perform-query "Open file: " ""
+                   (lambda (n) (open-file n)))]
+   [(name)
+    (let ([content (read-file name)])
+      (if content
+          (set! current-buffer (make-buffer name content))
+          (show-on-minibuf "Unable to read file: ~a" name)))]))

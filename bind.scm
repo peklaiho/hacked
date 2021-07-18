@@ -56,21 +56,21 @@
 ;; Process input
 ;; -------------
 
-(define current-keycodes '())
+(define buffered-keycodes '())
 
-(define process-current-input
+(define process-buffered-input
   (lambda ()
-    (let ([bind (key-map-find-recursively global-key-map current-keycodes)])
+    (let ([bind (key-map-find-recursively global-key-map buffered-keycodes)])
       (cond
        [(not bind)
         (show-on-minibuf "Key ~a is not bound"
-                         (keycodes->string current-keycodes))
-        (set! current-keycodes '())]
+                         (keycodes->string buffered-keycodes))
+        (set! buffered-keycodes '())]
        [(key-map? bind)
-        (show-on-minibuf (keycodes->string current-keycodes))]
+        (show-on-minibuf (keycodes->string buffered-keycodes))]
        [else
         (let ([fn (eval (car bind))] [arg (cdr bind)])
-          (set! current-keycodes '())
+          (set! buffered-keycodes '())
           (if arg (fn arg) (fn)))]))))
 
 (define process-input
@@ -80,11 +80,14 @@
        [(= keycode KEY_RESIZE)
         (screen-size-changed)]
        [(= keycode quit-key)
-        (set! current-keycodes '())
+        (set! buffered-keycodes '())
+        (set! current-mode MODE_NORMAL)
         (show-on-minibuf "Quit")]
+       [(eq? current-mode MODE_QUERY)
+        (minibuf-process-input keycode)]
        [else
-        (set! current-keycodes (append current-keycodes (list keycode)))
-        (process-current-input)]))))
+        (set! buffered-keycodes (append buffered-keycodes (list keycode)))
+        (process-buffered-input)]))))
 
 ;; ----------------
 ;; Default bindings
@@ -104,9 +107,10 @@
        (global-set-key (list i) 'insert-character-forward (integer->char i)))
      (range 128 255))
 
-    ;; Quit
+    ;; Misc
     (global-set-key (string->keycodes "C-q") 'exit-program)
     (global-set-key (string->keycodes "C-x C-c") 'exit-program)
+    (global-set-key (string->keycodes "C-x C-f") 'open-file)
 
     ;; Movement
     (global-set-key (string->keycodes "<left>") 'backward-character)

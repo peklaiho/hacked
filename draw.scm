@@ -1,7 +1,5 @@
 (define redraw-screen #t)
 
-(define minibuffer-text "")
-
 (define draw-screen
   (lambda ()
     (if redraw-screen (clear) (erase))
@@ -9,8 +7,7 @@
     (draw-buffer)
     (draw-statusbar)
     (draw-minibuffer)
-    (move (- (buffer-line) (buffer-offset-line))
-          (- (buffer-column) (buffer-offset-column)))
+    (draw-cursor)
     (refresh)))
 
 (define draw-buffer
@@ -32,13 +29,12 @@
 
 (define statusbar-content
   (lambda ()
-    (format "~3d:~2d g~2d o~3d:~2d    ~a"
+    (format "~3d:~2d   ~5d   ~a   ~a"
             (add1 (buffer-line))
             (buffer-column)
-            (buffer-goal-column)
-            (buffer-offset-line)
-            (buffer-offset-column)
-            (buffer-name))))
+            (buffer-length)
+            (buffer-name)
+            current-mode)))
 
 (define draw-statusbar
   (lambda ()
@@ -52,12 +48,18 @@
 (define draw-minibuffer
   (lambda ()
     (color-set 0 0)
-    (mvaddstr (minibuffer-line) 0 (string-truncate minibuffer-text COLS))
-    (set! minibuffer-text "")))
+    (mvaddstr (minibuffer-line) 0
+              (string-truncate
+               (minibuffer-text-to-draw) (sub1 COLS)))))
 
-(define show-on-minibuf
-  (lambda (txt . args)
-    (set! minibuffer-text (apply format txt args))))
+(define draw-cursor
+  (lambda ()
+    (cond
+      [(eq? current-mode MODE_QUERY)
+       (move (minibuffer-line) (string-length (minibuffer-text-to-draw)))]
+      [else
+       (move (- (buffer-line) (buffer-offset-line))
+             (- (buffer-column) (buffer-offset-column)))])))
 
 (define screen-size-changed
   (lambda ()

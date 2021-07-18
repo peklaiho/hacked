@@ -10,12 +10,19 @@
 (load "func.scm")
 (load "io.scm")
 (load "key.scm")
+(load "minibuf.scm")
 (load "pregexp.scm")
 (load "signal.scm")
 (load "string.scm")
 (load "util.scm")
 
- ;; Configure exception handler which closes ncurses
+;; The editor can be in different modes of operation:
+(define MODE_NORMAL #\N)
+(define MODE_QUERY #\Q)
+
+(define current-mode MODE_NORMAL)
+
+;; Configure exception handler which closes ncurses
 (with-exception-handler
  (lambda (ex) (endwin) (default-exception-handler ex))
  (lambda ()
@@ -41,10 +48,7 @@
    (init-pair 1 COLOR_BLACK COLOR_WHITE)
 
    ;; Make a scratch buffer and set it as current
-   (set! current-buffer
-         (make-buffer
-          "*scratch*"
-          (read-file "~/alice.txt")))
+   (set! current-buffer (make-buffer "*scratch*"))
 
    ;; Init bindings
    (bind-default-keys)
@@ -56,5 +60,7 @@
    (let loop ()
      (process-input)
      (draw-screen)
+     (when (eq? current-mode MODE_NORMAL)
+       (set! minibuffer-text ""))
      (loop))
 ))
