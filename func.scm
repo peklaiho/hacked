@@ -80,6 +80,34 @@
       (when (> cl (+ ofs-cl (last-buffer-column)))
         (buffer-offset-column-set! (- cl (last-buffer-column)))))))
 
+;; ----------
+;; Boundaries
+;; ----------
+
+(define find-boundary-forward
+  (lambda (boundary)
+    (let ([i (string-find-char-sequence
+              (buffer-content)
+              boundary (buffer-point) #t)])
+      (if i (add1 i) (end-of-buffer)))))
+
+(define find-boundary-backward
+  (lambda (boundary)
+    (let ([i (string-find-char-sequence
+              (buffer-content)
+              boundary (sub1 (buffer-point)) #f)])
+      (if i i (begin-of-buffer)))))
+
+(define forward-to-boundary
+  (lambda (boundary)
+    (set-point-and-goal
+     (find-boundary-forward boundary))))
+
+(define backward-to-boundary
+  (lambda (boundary)
+    (set-point-and-goal
+     (find-boundary-backward boundary))))
+
 ;; --------
 ;; Movement
 ;; --------
@@ -95,22 +123,6 @@
   (case-lambda
    [() (backward-character 1)]
    [(n) (set-point-and-goal (- (buffer-point) n))]))
-
-(define forward-to-boundary
-  (lambda (boundary)
-    (let ([i (string-find-char-sequence
-              (buffer-content)
-              boundary (buffer-point) #t)])
-      (if i (set-point-and-goal (add1 i))
-          (end-of-buffer)))))
-
-(define backward-to-boundary
-  (lambda (boundary)
-    (let ([i (string-find-char-sequence
-              (buffer-content)
-              boundary (sub1 (buffer-point)) #f)])
-      (if i (set-point-and-goal i)
-          (begin-of-buffer)))))
 
 ;; Move point to end of next word.
 (define forward-word
