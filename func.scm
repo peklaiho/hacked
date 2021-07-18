@@ -324,10 +324,14 @@
 (define open-file
   (case-lambda
    [()
-    (perform-query "Open file: " ""
-                   (lambda (n) (open-file n)))]
+    (perform-query
+     "Open file: "
+     (add-trailing-directory-separator
+      (compact-directory (current-directory)))
+     (lambda (n) (open-file n))
+     #f)]
    [(name)
     (let ([content (read-file name)])
       (if content
-          (set! current-buffer (make-buffer name content))
+          (set! current-buffer (make-buffer (path-last name) content name))
           (show-on-minibuf "Unable to read file: ~a" name)))]))
