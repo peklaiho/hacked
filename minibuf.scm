@@ -46,6 +46,18 @@
               (substring minibuffer-input 0
                          (sub1 (string-length minibuffer-input)))))]
 
+     ;; Alt-backspace
+     [(= keycode (bitwise-ior 127 MOD_ALT))
+      (when (> (string-length minibuffer-input) 0)
+        (let ([i (string-find-char-sequence
+                  minibuffer-input
+                  word-boundary
+                  (sub1 (string-length minibuffer-input))
+                  #f)])
+          (when (not i) (set! i 0))
+          (set! minibuffer-input
+                (substring minibuffer-input 0 i))))]
+
      ;; Normal key?
      [(and (> keycode 31) (< keycode 256))
       (set! minibuffer-input
