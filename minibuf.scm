@@ -24,22 +24,33 @@
 (define minibuf-process-input
   (lambda (keycode)
     (cond
+     ;; Tab
+     [(= keycode 9)
+      (when minibuffer-completion
+        (let ([completions (minibuffer-completion minibuffer-input)])
+          ;; For now we just handle one completion
+          (when (= (length completions) 1)
+            (set! minibuffer-input (car completions)))))]
+
+     ;; Enter
      [(or (= keycode 10) (= keycode 13))
       ;; Enter, call the continuation
       (set! current-mode MODE_NORMAL)
       (set! minibuffer-text "")
       (minibuffer-continuation minibuffer-input)]
+
+     ;; Backspace
      [(= keycode 127)
-      ;; Backspace
       (when (> (string-length minibuffer-input) 0)
         (set! minibuffer-input
               (substring minibuffer-input 0
                          (sub1 (string-length minibuffer-input)))))]
+
+     ;; Normal key?
      [(and (> keycode 31) (< keycode 256))
-      ;; Normal key?
       (set! minibuffer-input
             (string-append minibuffer-input
                            (string (integer->char keycode))))]
-     [else
-      ;; Some control key, don't do anything...
-      #f])))
+
+     ;; Something else, ignore for now
+     [else #f])))

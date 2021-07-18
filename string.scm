@@ -95,10 +95,17 @@
           (loop (string-find-char-backward str ch (sub1 start)) start
                 (cons (cons (add1 start) end) results))))))
 
-(define string-starts-with
+(define string-starts-with?
   (lambda (str start)
     (if (< (string-length str) (string-length start)) #f
         (string=? (substring str 0 (string-length start)) start))))
+
+(define string-ends-with?
+  (lambda (str end)
+    (if (> (string-length end) (string-length str)) #f
+        (string=? (substring str
+                   (- (string-length str) (string-length end))
+                   (string-length str)) end))))
 
 (define string-truncate
   (lambda (str n)

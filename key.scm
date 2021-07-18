@@ -218,13 +218,13 @@
 (define string->keycode
   (lambda (str)
     (let ([mods 0])
-      (when (string-starts-with str "C-")
+      (when (string-starts-with? str "C-")
         (set! mods (bitwise-ior mods MOD_CTRL))
         (set! str (substring str 2 (string-length str))))
-      (when (string-starts-with str "M-")
+      (when (string-starts-with? str "M-")
         (set! mods (bitwise-ior mods MOD_ALT))
         (set! str (substring str 2 (string-length str))))
-      (when (string-starts-with str "S-")
+      (when (string-starts-with? str "S-")
         (set! mods (bitwise-ior mods MOD_SHIFT))
         (set! str (substring str 2 (string-length str))))
       (let ([key

@@ -329,7 +329,7 @@
      (add-trailing-directory-separator
       (compact-directory (current-directory)))
      (lambda (n) (open-file n))
-     #f)]
+     complete-filename)]
    [(name)
     (let ([content (read-file name)])
       (if content
