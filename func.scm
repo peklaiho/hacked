@@ -261,26 +261,19 @@
       (buffer-substring 0 start)
       (buffer-substring end (buffer-length))))))
 
-;; Delete one character at given index.
-(define delete-character
-  (lambda (idx)
-    (delete-string idx (add1 idx))))
-
 ;; Delete one character forward.
 (define delete-character-forward
-  (lambda ()
-    (delete-character (buffer-point))))
+  (case-lambda
+   [() (delete-character-forward 1)]
+   [(n) (delete-string (buffer-point) (+ (buffer-point) n))]))
 
 ;; Delete one character backward.
 (define delete-character-backward
-  (lambda ()
-    (let* ([pt-before (buffer-point)]
-           [result (delete-character (sub1 (buffer-point)))])
-      ;; Move back only if point is same as before
-      ;; (was not moved already by the delete operation).
-      (when (and result (= pt-before (buffer-point)))
-        (backward-character))
-      result)))
+  (case-lambda
+   [() (delete-character-backward 1)]
+   [(n) (let ([start (- (buffer-point) n)])
+          (delete-string start (buffer-point))
+          (set-point-and-goal start))]))
 
 (define delete-rest-of-line
   (lambda ()
