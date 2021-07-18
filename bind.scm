@@ -154,13 +154,21 @@
     (global-set-key (string->keycodes "C-v") 'scroll-page-down)
     (global-set-key (string->keycodes "C-l") 'scroll-current-line-middle)
 
-    ;; Editing
-    (global-set-key (string->keycodes "<enter>") 'insert-character-forward #\newline)
-    (global-set-key (string->keycodes "<return>") 'insert-character-forward #\newline)
-    (global-set-key (string->keycodes "<space>") 'insert-character-forward #\space)
+    ;; Insertion
+    (global-set-key (string->keycodes "<enter>")
+                    'insert-character-forward #\newline)
+    (global-set-key (string->keycodes "<return>")
+                    'insert-character-forward #\newline)
+    (global-set-key (string->keycodes "<space>")
+                    'insert-character-forward #\space)
 
+    ;; Deletion
     (global-set-key (string->keycodes "<backspace>") 'delete-character-backward)
     (global-set-key (string->keycodes "<delete>") 'delete-character-forward)
     (global-set-key (string->keycodes "C-d") 'delete-character-forward)
+
+    (global-set-key (string->keycodes "M-<backspace>") 'delete-word-backward)
+    (global-set-key (string->keycodes "M-d") 'delete-word-forward)
+
     (global-set-key (string->keycodes "C-k") 'delete-rest-of-line)
 ))

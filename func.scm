@@ -287,6 +287,24 @@
           (delete-string start (buffer-point))
           (set-point-and-goal start))]))
 
+(define delete-word-forward
+  (case-lambda
+   [() (delete-word-forward 1)]
+   [(n) (repeat-times
+         (lambda () (delete-string
+                     (buffer-point)
+                     (find-boundary-forward word-boundary)))
+         n)]))
+
+(define delete-word-backward
+  (case-lambda
+   [() (delete-word-backward 1)]
+   [(n) (repeat-times
+         (lambda ()
+           (let ([start (find-boundary-backward word-boundary)])
+             (delete-string start (buffer-point))
+             (set-point-and-goal start))) n)]))
+
 (define delete-rest-of-line
   (lambda ()
     (let ([start (buffer-point)]
