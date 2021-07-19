@@ -48,7 +48,7 @@
    (init-pair 1 COLOR_BLACK COLOR_WHITE)
 
    ;; Make a scratch buffer and set it as current
-   (make-buffer "*scratch*")
+   (select-buffer (make-buffer "*scratch*"))
 
    ;; Init bindings
    (bind-default-keys)

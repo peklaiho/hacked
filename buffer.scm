@@ -41,8 +41,15 @@
               )])
       (buffer-update-line-indices b)
       (set! buffer-list (cons b buffer-list))
-      (set! current-buffer b)
       b)]))
+
+(define find-or-make-buffer
+  (lambda (name)
+    (let loop ([buffers buffer-list])
+      (cond
+       [(null? buffers) (make-buffer name)]
+       [(string=? name (buffer-name (car buffers))) (car buffers)]
+       [else (loop (cdr buffers))]))))
 
 ;; Internal functions
 

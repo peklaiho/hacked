@@ -349,13 +349,38 @@
 ;; Buffers
 ;; -------
 
+(define complete-buffer-name
+  (lambda (start)
+    (let ([names (map (lambda (a)
+                        (buffer-name a))
+                      buffer-list)])
+      (if (= (string-length start) 0)
+          names
+          (filter (lambda (a)
+                    (string-starts-with? a start))
+                  names)))))
+
+(define select-buffer
+  (case-lambda
+   [()
+    (perform-query
+     "Buffer: "
+     ""
+     (lambda (name) (if (= (string-length name) 0)
+                        (show-on-minibuf "Invalid buffer name.")
+                        (select-buffer
+                         (find-or-make-buffer name))))
+     complete-buffer-name)]
+   [(b) (set! current-buffer b)]))
+
 (define kill-buffer
   (case-lambda
    [() (kill-buffer current-buffer)]
    [(b) (set! buffer-list (remq b buffer-list))
-    (if (null? buffer-list)
-      (make-buffer "*scratch*")
-      (set! current-buffer (car buffer-list)))]))
+    (select-buffer
+     (if (null? buffer-list)
+         (make-buffer "*scratch*")
+         (car buffer-list)))]))
 
 ;; -----
 ;; Files
@@ -373,5 +398,5 @@
    [(name)
     (let ([content (read-file name)])
       (if content
-          (make-buffer (path-last name) content name)
+          (select-buffer (make-buffer (path-last name) content name))
           (show-on-minibuf "Unable to read file: ~a" name)))]))
