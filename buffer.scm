@@ -1,5 +1,7 @@
 (define current-buffer #f)
 
+(define buffer-list (list))
+
 (define buffer-rtd
   (make-record-type-descriptor
    'buffer #f #f #f #f
@@ -38,6 +40,8 @@
               #\newline  ; newline-char
               )])
       (buffer-update-line-indices b)
+      (set! buffer-list (cons b buffer-list))
+      (set! current-buffer b)
       b)]))
 
 ;; Internal functions

@@ -109,6 +109,7 @@
 
     ;; Misc
     (global-set-key (string->keycodes "C-q") 'exit-program)
+    (global-set-key (string->keycodes "C-x k") 'kill-buffer)
     (global-set-key (string->keycodes "C-x C-c") 'exit-program)
     (global-set-key (string->keycodes "C-x C-f") 'open-file)
 

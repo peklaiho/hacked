@@ -349,6 +349,14 @@
 ;; Buffers
 ;; -------
 
+(define kill-buffer
+  (case-lambda
+   [() (kill-buffer current-buffer)]
+   [(b) (set! buffer-list (remq b buffer-list))
+    (if (null? buffer-list)
+      (make-buffer "*scratch*")
+      (set! current-buffer (car buffer-list)))]))
+
 ;; -----
 ;; Files
 ;; -----
@@ -365,5 +373,5 @@
    [(name)
     (let ([content (read-file name)])
       (if content
-          (set! current-buffer (make-buffer (path-last name) content name))
+          (make-buffer (path-last name) content name)
           (show-on-minibuf "Unable to read file: ~a" name)))]))
