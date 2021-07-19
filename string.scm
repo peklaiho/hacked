@@ -17,10 +17,6 @@
   (list (lambda (a) (char-punctuation? a))
         (lambda (a) (not (char-punctuation? a)))))
 
-(define paragraph-boundary
-  (let ([f (lambda (a) (char=? a #\newline))])
-    (list f f)))
-
 ;; Find first occurence of character that matches predicate p.
 (define string-find-char-forward-p
   (lambda (str p start)

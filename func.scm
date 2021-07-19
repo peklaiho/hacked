@@ -157,14 +157,14 @@
   (case-lambda
    [() (forward-paragraph 1)]
    [(n) (repeat-times
-         (lambda () (forward-to-boundary paragraph-boundary)) n)]))
+         (lambda () (forward-to-boundary (buffer-paragraph-boundary))) n)]))
 
 ;; Move point to previous blank line.
 (define backward-paragraph
   (case-lambda
    [() (backward-paragraph 1)]
    [(n) (repeat-times
-         (lambda () (backward-to-boundary paragraph-boundary)) n)]))
+         (lambda () (backward-to-boundary (buffer-paragraph-boundary))) n)]))
 
 ;; Move point to beginning of line.
 (define begin-of-line
@@ -330,6 +330,11 @@
         (forward-character))
       result)))
 
+;; Insert buffer-specific newline-character.
+(define insert-newline
+  (lambda ()
+    (insert-character-forward (buffer-newline-char))))
+
 ;; Insert string.
 (define insert-string
   (case-lambda
@@ -339,6 +344,10 @@
      (string-append
       (buffer-substring 0 idx) txt
       (buffer-substring idx (buffer-length))))]))
+
+;; -------
+;; Buffers
+;; -------
 
 ;; -----
 ;; Files

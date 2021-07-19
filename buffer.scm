@@ -11,7 +11,9 @@
       (mutable offset-line)
       (mutable offset-col)
       (mutable line)
-      (mutable line-indices))))
+      (mutable line-indices)
+      (mutable modified)
+      (mutable newline-char))))
 
 (define buffer-rcd
   (make-record-constructor-descriptor
@@ -26,12 +28,14 @@
               name
               filename
               content
-              0        ; point
-              0        ; goal-col
-              0        ; offset-line
-              0        ; offset-col
-              0        ; line
-              '#()     ; line-indices
+              0          ; point
+              0          ; goal-col
+              0          ; offset-line
+              0          ; offset-col
+              0          ; line
+              '#()       ; line-indices
+              #f         ; modified
+              #\newline  ; newline-char
               )])
       (buffer-update-line-indices b)
       b)]))
@@ -57,7 +61,7 @@
   (lambda (b)
     (buffer-line-indices-set! b
      (list->vector
-      (string-split-index (buffer-content b) #\newline)))))
+      (string-split-index (buffer-content b) (buffer-newline-char b))))))
 
 ;; Getters
 
@@ -105,6 +109,16 @@
   (case-lambda
    [() (buffer-line-indices current-buffer)]
    [(b) ((record-accessor buffer-rtd 8) b)]))
+
+(define buffer-modified
+  (case-lambda
+   [() (buffer-modified current-buffer)]
+   [(b) ((record-accessor buffer-rtd 9) b)]))
+
+(define buffer-newline-char
+  (case-lambda
+   [() (buffer-newline-char current-buffer)]
+   [(b) ((record-accessor buffer-rtd 10) b)]))
 
 ;; Setters
 
@@ -162,6 +176,16 @@
    [(v) (buffer-line-indices-set! current-buffer v)]
    [(b v) ((record-mutator buffer-rtd 8) b v)]))
 
+(define buffer-modified-set!
+  (case-lambda
+   [(v) (buffer-modified-set! current-buffer v)]
+   [(b v) ((record-mutator buffer-rtd 9) b v)]))
+
+(define buffer-newline-char-set!
+  (case-lambda
+   [(v) (buffer-newline-char-set! current-buffer v)]
+   [(b v) ((record-mutator buffer-rtd 10) b v)]))
+
 ;; Helpers
 
 ;; Return the current column index.
@@ -183,6 +207,13 @@
    [(b i) (let ([ind (buffer-line-indices b)])
             (if (or (< i 0) (>= i (vector-length ind))) #f
                 (vector-ref ind i)))]))
+
+(define buffer-paragraph-boundary
+  (case-lambda
+   [() (buffer-paragraph-boundary current-buffer)]
+   [(b) (list
+         (lambda (a) (char=? a (buffer-newline-char b)))
+         (lambda (a) (char=? a (buffer-newline-char b))))]))
 
 (define buffer-substring
   (case-lambda

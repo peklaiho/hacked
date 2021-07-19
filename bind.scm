@@ -155,10 +155,8 @@
     (global-set-key (string->keycodes "C-l") 'scroll-current-line-middle)
 
     ;; Insertion
-    (global-set-key (string->keycodes "<enter>")
-                    'insert-character-forward #\newline)
-    (global-set-key (string->keycodes "<return>")
-                    'insert-character-forward #\newline)
+    (global-set-key (string->keycodes "<enter>") 'insert-newline)
+    (global-set-key (string->keycodes "<return>") 'insert-newline)
     (global-set-key (string->keycodes "<space>")
                     'insert-character-forward #\space)
 
