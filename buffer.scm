@@ -147,6 +147,7 @@
   (case-lambda
    [(v) (buffer-content-set! current-buffer v)]
    [(b v) ((record-mutator buffer-rtd 2) b v)
+    (buffer-modified-set! b #t)
     (buffer-update-line-indices b)
     ;; Check point is inside bounds and call
     ;; buffer-update-line also.
