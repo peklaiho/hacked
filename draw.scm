@@ -29,13 +29,11 @@
 
 (define statusbar-content
   (lambda ()
-    (format "~3d:~2d   ~5d   ~a : ~a   ~a"
+    (format "~3d:~2d  ~a  ~a"
             (add1 (buffer-line))
             (buffer-column)
-            (buffer-length)
-            (buffer-name)
-            (buffer-filename)
-            current-mode)))
+            (if (buffer-modified) "*" " ")
+            (buffer-name))))
 
 (define draw-statusbar
   (lambda ()
