@@ -1,3 +1,9 @@
+;; ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+;; hacked - hacker's editor
+;; Copyright (c) 2021 Pekka Laiho
+;; License: GPLv3
+;; ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 ;; Open file for debugging
 (define debug-file
   (open-file-output-port

@@ -1,3 +1,9 @@
+;; ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+;; hacked - hacker's editor
+;; Copyright (c) 2021 Pekka Laiho
+;; License: GPLv3
+;; ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 ;; Modifier keys
 (define MOD_CTRL (bitwise-arithmetic-shift 1 29))
 (define MOD_ALT (bitwise-arithmetic-shift 1 30))

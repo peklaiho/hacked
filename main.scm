@@ -1,3 +1,9 @@
+;; ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+;; hacked - hacker's editor
+;; Copyright (c) 2021 Pekka Laiho
+;; License: GPLv3
+;; ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 (import
  (rnrs)
  (only (chezscheme) format)

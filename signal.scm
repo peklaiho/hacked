@@ -1,3 +1,9 @@
+;; ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+;; hacked - hacker's editor
+;; Copyright (c) 2021 Pekka Laiho
+;; License: GPLv3
+;; ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 (define SIGHUP     1) ; Hangup
 (define SIGINT     2) ; Interactive attention signal
 (define SIGQUIT    3) ; Quit
