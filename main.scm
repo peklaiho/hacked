@@ -22,6 +22,8 @@
 
 (define current-mode MODE_NORMAL)
 
+(define hacked-version "0.1")
+
 ;; Configure exception handler which closes ncurses
 (with-exception-handler
  (lambda (ex) (endwin) (default-exception-handler ex))

@@ -29,20 +29,19 @@
 
 (define statusbar-content
   (lambda ()
-    (format "~3d:~2d  ~a  ~a"
-            (add1 (buffer-line))
-            (buffer-column)
-            (if (buffer-modified) "*" " ")
-            (buffer-name))))
+    (let* ([begin (format "~3d:~2d  ~a  ~a"
+                         (add1 (buffer-line))
+                        (buffer-column)
+                        (if (buffer-modified) "*" " ")
+                        (buffer-name))]
+           [end (format "hacked ~a " hacked-version)]
+           [fill (make-string (- COLS (string-length begin) (string-length end)) #\space)])
+      (string-append begin fill end))))
 
 (define draw-statusbar
   (lambda ()
     (color-set 1 0)
-    (let* ([content (statusbar-content)]
-           [fill (- COLS (string-length content))])
-      (when (> fill 0)
-        (set! content (string-append content (make-string fill #\space))))
-      (mvaddstr (statusbar-line) 0 content))))
+    (mvaddstr (statusbar-line) 0 (statusbar-content))))
 
 (define draw-minibuffer
   (lambda ()
