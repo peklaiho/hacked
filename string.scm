@@ -80,6 +80,15 @@
         [(string-match-char-sequence str preds i fn) i]
         [else (loop (fn i))])))))
 
+;; Join list of strings together, separated by delimiter.
+(define string-join
+  (lambda (strs dl)
+    (cond
+     [(null? strs) ""]
+     [(= 1 (length strs)) (car strs)]
+     [else (string-append (car strs) (string dl)
+                          (string-join (cdr strs) dl))])))
+
 ;; Split string by character and return the substrings as a list.
 (define string-split
   (lambda (str ch)
