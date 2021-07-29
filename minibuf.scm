@@ -34,7 +34,7 @@
      [(= keycode 9)
       (when minibuffer-completion
         (let ([completions (minibuffer-completion minibuffer-input)])
-          (debug-log (format "Completions for ~a: ~s" minibuffer-input completions))
+          (add-to-messages "Completions for ~a: ~s" minibuffer-input completions)
           ;; For now we just handle one completion
           (when (= (length completions) 1)
             (set! minibuffer-input (car completions)))))]

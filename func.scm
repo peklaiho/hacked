@@ -364,6 +364,17 @@
 ;; Buffers
 ;; -------
 
+(define add-to-messages
+  (lambda (txt . args)
+    (let ([buf (find-or-make-buffer "*messages*")])
+      (buffer-append
+       buf (string-append
+            (apply format txt args)
+            (string (buffer-newline-char buf))))
+      (buffer-point-set! buf (buffer-length buf))
+      (when (eq? current-buffer buf)
+        (reconcile-by-scrolling)))))
+
 (define complete-buffer-name
   (lambda (start)
     (let ([names (map (lambda (a)
@@ -393,7 +404,8 @@
                         (select-buffer
                          (find-or-make-buffer name))))
      complete-buffer-name)]
-   [(b) (set! current-buffer b)]))
+   [(b) (set! current-buffer b)
+    (reconcile-by-scrolling)]))
 
 (define kill-buffer
   (case-lambda

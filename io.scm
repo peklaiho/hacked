@@ -4,21 +4,6 @@
 ;; License: GPLv3
 ;; ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-;; Open file for debugging
-(define debug-file
-  (open-file-output-port
-   "~/debug.txt"
-   (file-options no-fail)
-   (buffer-mode none)
-   (make-transcoder (utf-8-codec))))
-
-;; Define some utility functions
-(define debug-log
-  (lambda (obj)
-    (write obj debug-file)
-    (newline debug-file)
-    (flush-output-port debug-file)))
-
 (define home-directory
   (lambda ()
     (getenv "HOME")))

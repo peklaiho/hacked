@@ -206,6 +206,13 @@
 
 ;; Helpers
 
+(define buffer-append
+  (case-lambda
+   [(txt) (buffer-append current-buffer txt)]
+   [(b txt) (buffer-content-set!
+             b (string-append
+                (buffer-content b) txt))]))
+
 ;; Return the current column index.
 (define buffer-column
   (case-lambda
