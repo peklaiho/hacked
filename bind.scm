@@ -88,6 +88,7 @@
        [(= keycode quit-key)
         (set! buffered-keycodes '())
         (set! current-mode MODE_NORMAL)
+        (minibuf-hide-completions)
         (show-on-minibuf "Quit")]
        [(eq? current-mode MODE_QUERY)
         (minibuf-process-input keycode)]

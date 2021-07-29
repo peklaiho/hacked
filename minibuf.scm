@@ -27,6 +27,19 @@
         (string-append minibuffer-text minibuffer-input)
         minibuffer-text)))
 
+(define minibuf-show-completions
+  (lambda (completions)
+    (let ([buf (find-or-make-buffer "*completions*")])
+      (buffer-content-set!
+       buf (if (null? completions) "(no completions)"
+               (string-join completions (buffer-newline-char buf))))
+      (select-buffer buf))))
+
+(define minibuf-hide-completions
+  (lambda ()
+    (let ([buf (find-buffer "*completions*")])
+      (when buf (kill-buffer buf)))))
+
 (define minibuf-process-input
   (lambda (keycode)
     (cond
@@ -34,16 +47,18 @@
      [(= keycode 9)
       (when minibuffer-completion
         (let ([completions (minibuffer-completion minibuffer-input)])
-          (add-to-messages "Completions for ~a: ~s" minibuffer-input completions)
-          ;; For now we just handle one completion
-          (when (= (length completions) 1)
-            (set! minibuffer-input (car completions)))))]
+          (if (= (length completions) 1)
+              (begin
+                (minibuf-hide-completions)
+                (set! minibuffer-input (car completions)))
+              (minibuf-show-completions completions))))]
 
      ;; Enter
      [(or (= keycode 10) (= keycode 13))
       ;; Enter, call the continuation
       (set! current-mode MODE_NORMAL)
       (set! minibuffer-text "")
+      (minibuf-hide-completions)
       (minibuffer-continuation minibuffer-input)]
 
      ;; Backspace

@@ -49,13 +49,18 @@
       (set! buffer-list (cons b buffer-list))
       b)]))
 
-(define find-or-make-buffer
+(define find-buffer
   (lambda (name)
     (let loop ([buffers buffer-list])
       (cond
-       [(null? buffers) (make-buffer name)]
+       [(null? buffers) #f]
        [(string=? name (buffer-name (car buffers))) (car buffers)]
        [else (loop (cdr buffers))]))))
+
+(define find-or-make-buffer
+  (lambda (name)
+    (let ([buf (find-buffer name)])
+      (if buf buf (make-buffer name)))))
 
 ;; Internal functions
 
