@@ -218,6 +218,15 @@
    [() (backward-line 1)]
    [(n) (goto-line (- (buffer-line) n))]))
 
+;; Move to first non-whitespace character of current line.
+(define back-to-indentation
+  (lambda ()
+    (let* ([not-ws? (lambda (a) (not (or (char=? a #\space) (char=? a #\tab))))]
+           [idx (buffer-line-index)]
+           [result (string-find-char-forward-p (buffer-content) not-ws? (car idx))])
+      (set-point-and-goal
+       (if result (min result (cdr idx)) (cdr idx))))))
+
 ;; -------------------
 ;; Scrolling (offsets)
 ;; -------------------
