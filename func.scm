@@ -95,14 +95,14 @@
     (let ([i (string-find-char-sequence
               (buffer-content)
               boundary (buffer-point) #t)])
-      (if i (add1 i) (end-of-buffer)))))
+      (if i (add1 i) (buffer-length)))))
 
 (define find-boundary-backward
   (lambda (boundary)
     (let ([i (string-find-char-sequence
               (buffer-content)
               boundary (sub1 (buffer-point)) #f)])
-      (if i i (begin-of-buffer)))))
+      (if i i 0))))
 
 (define forward-to-boundary
   (lambda (boundary)
