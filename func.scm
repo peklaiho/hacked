@@ -397,19 +397,12 @@
                     (string-starts-with? a start))
                   names)))))
 
-(define select-buffer-suggestion
-  (lambda ()
-    (if (< (length buffer-list) 2) ""
-        (buffer-name
-         (if (eq? (car buffer-list) current-buffer)
-             (cadr buffer-list) (car buffer-list))))))
-
 (define select-buffer
   (case-lambda
    [()
     (perform-query
      "Buffer: "
-     (select-buffer-suggestion)
+     ""
      (lambda (name) (if (= (string-length name) 0)
                         (show-on-minibuf "Invalid buffer name.")
                         (select-buffer
