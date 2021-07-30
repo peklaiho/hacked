@@ -426,22 +426,3 @@
      (if (null? buffer-list)
          (make-buffer "*scratch*")
          (car buffer-list)))]))
-
-;; -----
-;; Files
-;; -----
-
-(define open-file
-  (case-lambda
-   [()
-    (perform-query
-     "Open file: "
-     (add-trailing-directory-separator
-      (compact-directory (current-directory)))
-     (lambda (n) (open-file n))
-     complete-filename)]
-   [(name)
-    (let ([content (read-file name)])
-      (if content
-          (select-buffer (make-buffer (path-last name) content name))
-          (show-on-minibuf "Unable to read file: ~a" name)))]))
