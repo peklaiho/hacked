@@ -145,6 +145,7 @@
     (global-set-key (string->keycodes "M-{") 'backward-paragraph)
     (global-set-key (string->keycodes "M-}") 'forward-paragraph)
     (global-set-key (string->keycodes "M-m") 'back-to-indentation)
+    (global-set-key (string->keycodes "M-g") 'goto-line)
 
     (global-set-key (string->keycodes "M-<") 'begin-of-buffer)
     (global-set-key (string->keycodes "M->") 'end-of-buffer)

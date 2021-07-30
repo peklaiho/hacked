@@ -197,14 +197,25 @@
 ;; Move point to given line and try to move
 ;; column to goal-column.
 (define goto-line
-  (lambda (l)
-    (let ([idx (buffer-line-index l)])
-      (when idx
-        (set-point
-         (min-max (+ (car idx) (buffer-goal-column))
-                  (car idx)
-                  (cdr idx))))
-      idx)))
+  (case-lambda
+   [() (perform-query
+        "Goto line: "
+        ""
+        (lambda (ls)
+          (let ([l (string->number ls)])
+            (if l (goto-line (sub1 l))
+                (show-on-minibuf "Invalid line number."))))
+        #f)]
+   [(l) (set-point
+         (cond
+          [(< l 0) 0]
+          [(>= l (vector-length (buffer-line-indices))) (buffer-length)]
+          [else
+           (let ([idx (buffer-line-index l)])
+             (min-max
+              (+ (car idx) (buffer-goal-column))
+              (car idx)
+              (cdr idx)))]))]))
 
 ;; Move point to next line.
 (define forward-line
