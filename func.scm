@@ -386,16 +386,22 @@
       (when (eq? current-buffer buf)
         (reconcile-by-scrolling)))))
 
+;; Compare buffer names for sorting.
+(define compare-buffer-names
+  (lambda (a b)
+    (string-ci<? a b)))
+
 (define complete-buffer-name
   (lambda (start)
-    (let ([names (map (lambda (a)
-                        (buffer-name a))
-                      buffer-list)])
-      (if (= (string-length start) 0)
-          names
-          (filter (lambda (a)
-                    (string-starts-with? a start))
-                  names)))))
+    (list-sort
+     compare-buffer-names
+     (let ([names (map
+                   (lambda (a) (buffer-name a))
+                   buffer-list)])
+       (if (= (string-length start) 0) names
+           (filter
+            (lambda (a) (string-starts-with? a start))
+            names))))))
 
 (define select-buffer
   (case-lambda
