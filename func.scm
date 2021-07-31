@@ -204,7 +204,7 @@
         (lambda (ls)
           (let ([l (string->number ls)])
             (if l (goto-line (sub1 l))
-                (show-on-minibuf "Invalid line number."))))
+                (show-on-minibuf "Invalid line number"))))
         #f)]
    [(l) (set-point
          (cond
@@ -410,10 +410,9 @@
     (perform-query
      "Buffer: "
      ""
-     (lambda (name) (if (= (string-length name) 0)
-                        (show-on-minibuf "Invalid buffer name.")
-                        (select-buffer
-                         (find-or-make-buffer name))))
+     (lambda (name) (if (buffer-valid-name? name)
+                        (select-buffer (find-or-make-buffer name))
+                        (show-on-minibuf "Invalid buffer name")))
      complete-buffer-name)]
    [(b) (set! current-buffer b)
     (reconcile-by-scrolling)]))

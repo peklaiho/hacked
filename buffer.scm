@@ -249,3 +249,9 @@
   (case-lambda
    [(beg end) (buffer-substring current-buffer beg end)]
    [(b beg end) (substring (buffer-content b) beg end)]))
+
+(define buffer-valid-name?
+  (lambda (name)
+    ;; This needs to be improved, but for
+    ;; now we just check it's not empty string.
+    (> (string-length name) 0)))
