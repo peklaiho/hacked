@@ -69,8 +69,8 @@
     (let ([bind (key-map-find-recursively global-key-map buffered-keycodes)])
       (cond
        [(not bind)
-        (show-on-minibuf "Key ~a is not bound"
-                         (keycodes->string buffered-keycodes))
+        (show-on-minibuf (format "Key ~a is not bound"
+                         (keycodes->string buffered-keycodes)))
         (set! buffered-keycodes '())]
        [(key-map? bind)
         (show-on-minibuf (keycodes->string buffered-keycodes))]
@@ -120,6 +120,7 @@
     (global-set-key (string->keycodes "C-x k") 'kill-buffer)
     (global-set-key (string->keycodes "C-x C-c") 'exit-program)
     (global-set-key (string->keycodes "C-x C-f") 'open-file)
+    (global-set-key (string->keycodes "C-x C-s") 'save-buffer)
 
     ;; Movement
     (global-set-key (string->keycodes "<left>") 'backward-character)

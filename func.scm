@@ -375,12 +375,13 @@
 ;; Buffers
 ;; -------
 
-(define add-to-messages
-  (lambda (txt . args)
+(define show-message
+  (lambda (message)
+    (show-on-minibuf message)
     (let ([buf (find-or-make-buffer "*messages*")])
       (buffer-append
        buf (string-append
-            (apply format txt args)
+            message
             (string (buffer-newline-char buf))))
       (buffer-point-set! buf (buffer-length buf))
       (when (eq? current-buffer buf)

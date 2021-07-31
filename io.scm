@@ -41,15 +41,38 @@
 ;; Read a file from disk.
 (define read-file
   (lambda (filename)
-    (if (and (file-exists? filename) (file-regular? filename))
-        (let* ([f (open-file-input-port
-                   filename
-                   (file-options)
-                   (buffer-mode block)
-                   (make-transcoder (utf-8-codec)))]
-               [content (get-string-all f)])
-          (close-port f)
-          content) #f)))
+    (call/cc
+     (lambda (err)
+       (with-exception-handler
+        (lambda (ex) (err #f))
+        (lambda ()
+          (if (or (not (file-exists? filename)) (file-directory? filename))
+              (err #f)
+              (let* ([f (open-file-input-port
+                         filename
+                         (file-options)
+                         (buffer-mode block)
+                         (make-transcoder (utf-8-codec)))]
+                     [content (get-string-all f)])
+                (close-port f)
+                content))))))))
+
+;; Write file to disk.
+(define write-file
+  (lambda (filename content)
+    (call/cc
+     (lambda (err)
+       (with-exception-handler
+        (lambda (ex) (err #f))
+        (lambda ()
+          (let ([f (open-file-output-port
+                    filename
+                    (file-options no-fail)
+                    (buffer-mode block)
+                    (make-transcoder (utf-8-codec)))])
+            (put-string f content)
+            (close-port f)
+            #t)))))))
 
 ;; Append two directories, adding directory separator if required.
 (define combine-directories
@@ -105,5 +128,28 @@
    [(name)
     (let ([content (read-file name)])
       (if content
-          (select-buffer (make-buffer (path-last name) content name))
-          (show-on-minibuf "Unable to read file: ~a" name)))]))
+          (begin
+            (select-buffer (make-buffer (path-last name) content name))
+            (show-message (format "Read ~a" name)))
+          (show-message (format "Unable to read ~a" name))))]))
+
+;; Save buffer into a file.
+(define save-buffer
+  (case-lambda
+   [() (save-buffer current-buffer)]
+   [(b) (if (buffer-filename b)
+            (save-buffer b (buffer-filename b))
+            (perform-query
+             "Save as: "
+             (add-trailing-directory-separator
+              (compact-directory (current-directory)))
+             (lambda (n) (save-buffer b n))
+             #f))]
+   [(b name)
+    (if (write-file name (buffer-content b))
+        (begin
+          (buffer-name-set! b (path-last name))
+          (buffer-filename-set! b name)
+          (buffer-modified-set! b #f)
+          (show-message (format "Wrote ~a" name)))
+        (show-message (format "Unable to write ~a" name)))]))

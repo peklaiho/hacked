@@ -10,8 +10,8 @@
 (define minibuffer-completion #f)
 
 (define show-on-minibuf
-  (lambda (txt . args)
-    (set! minibuffer-text (apply format txt args))))
+  (lambda (message)
+    (set! minibuffer-text message)))
 
 (define perform-query
   (lambda (txt initial-input cont comp-fn)
