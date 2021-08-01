@@ -51,7 +51,7 @@
 (define minibuf-hide-completions
   (lambda ()
     (let ([buf (find-buffer "*completions*")])
-      (when buf (kill-buffer-really buf)))))
+      (when buf (kill-buffer buf)))))
 
 (define minibuf-process-input-confirm
   (lambda (keycode)

@@ -417,16 +417,16 @@
    [(b) (set! current-buffer b)
     (reconcile-by-scrolling)]))
 
-(define kill-buffer
+(define kill-buffer-confirm
   (case-lambda
-   [() (kill-buffer current-buffer)]
+   [() (kill-buffer-confirm current-buffer)]
    [(b) (if (and (buffer-modified b) (not (buffer-temporary? b)))
             (perform-confirm
              (format "Kill modified buffer ~a (y/n)? " (buffer-name b))
-             (lambda () (kill-buffer-really b)) #f)
-            (kill-buffer-really b))]))
+             (lambda () (kill-buffer b)) #f)
+            (kill-buffer b))]))
 
-(define kill-buffer-really
+(define kill-buffer
   (lambda (b)
     (set! buffer-list (remq b buffer-list))
     (select-buffer
