@@ -62,6 +62,16 @@
    ;; Init bindings
    (bind-default-keys)
 
+   ;; Load init file if present
+   (let ([init-file
+          (string-append
+           (home-directory)
+           (string (directory-separator))
+           ".hacked")])
+     (when (file-exists? init-file)
+       (show-message (format "Load ~a" init-file) #f)
+       (load init-file)))
+
    ;; Draw screen
    (draw-screen)
 

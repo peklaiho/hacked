@@ -4,6 +4,7 @@
 ;; License: GPLv3
 ;; ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+;; Home directory without trailing slash.
 (define home-directory
   (lambda ()
     (getenv "HOME")))

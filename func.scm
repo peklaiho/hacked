@@ -376,8 +376,11 @@
 ;; -------
 
 (define show-message
-  (lambda (message)
-    (show-on-minibuf message)
+  (case-lambda
+   [(message) (show-message message #t)]
+   [(message on-minibuf)
+    (when on-minibuf
+      (show-on-minibuf message))
     (let ([buf (find-or-make-buffer "*messages*")])
       (buffer-append
        buf (string-append
@@ -385,7 +388,7 @@
             (string (buffer-newline-char buf))))
       (buffer-point-set! buf (buffer-length buf))
       (when (eq? current-buffer buf)
-        (reconcile-by-scrolling)))))
+        (reconcile-by-scrolling)))]))
 
 ;; Compare buffer names for sorting.
 (define compare-buffer-names
