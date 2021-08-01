@@ -62,6 +62,14 @@
     (let ([buf (find-buffer name)])
       (if buf buf (make-buffer name)))))
 
+;; Return true if there are modified and non-temporary buffers.
+(define unsaved-buffers?
+  (lambda ()
+    (let loop ([list buffer-list])
+      (if (null? list) #f
+          (if (and (buffer-modified (car list)) (not (buffer-temporary? (car list)))) #t
+              (loop (cdr list)))))))
+
 ;; Internal functions
 
 ;; Find the current line where the point is on.

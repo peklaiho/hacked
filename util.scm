@@ -4,12 +4,18 @@
 ;; License: GPLv3
 ;; ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+(define exit-program-confirm
+  (lambda ()
+    (if (unsaved-buffers?)
+        (perform-confirm
+         "Modified buffer, really exit (y/n)? "
+         (lambda () (exit-program 0)) #f)
+        (exit-program 0))))
+
 (define exit-program
-  (case-lambda
-   [() (exit-program 0)]
-   [(exit-code)
+  (lambda (exit-code)
     (endwin)
-    (exit exit-code)]))
+    (exit exit-code)))
 
 (define min-max
   (lambda (value minimum maximum)

@@ -117,10 +117,10 @@
      (range 128 255))
 
     ;; Misc
-    (global-set-key (string->keycodes "C-q") 'exit-program)
+    (global-set-key (string->keycodes "C-q") 'exit-program-confirm)
     (global-set-key (string->keycodes "C-x b") 'select-buffer)
     (global-set-key (string->keycodes "C-x k") 'kill-buffer-confirm)
-    (global-set-key (string->keycodes "C-x C-c") 'exit-program)
+    (global-set-key (string->keycodes "C-x C-c") 'exit-program-confirm)
     (global-set-key (string->keycodes "C-x C-f") 'open-file)
     (global-set-key (string->keycodes "C-x C-s") 'save-buffer)
 
