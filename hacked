@@ -1,0 +1,4 @@
+#!/usr/bin/env -S scheme --script
+(define hacked-directory "/home/pekka/code/scm/hacked")
+(source-directories (list "." hacked-directory))
+(load (string-append hacked-directory "/main.scm"))
