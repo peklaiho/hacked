@@ -25,6 +25,7 @@
 ;; The editor can be in different modes of operation:
 (define MODE_NORMAL #\N)
 (define MODE_QUERY #\Q)
+(define MODE_CONFIRM #\C)
 
 (define current-mode MODE_NORMAL)
 

@@ -420,8 +420,16 @@
 (define kill-buffer
   (case-lambda
    [() (kill-buffer current-buffer)]
-   [(b) (set! buffer-list (remq b buffer-list))
+   [(b) (if (and (buffer-modified b) (not (buffer-temporary? b)))
+            (perform-confirm
+             (format "Kill modified buffer ~a (y/n)? " (buffer-name b))
+             (lambda () (kill-buffer-really b)) #f)
+            (kill-buffer-really b))]))
+
+(define kill-buffer-really
+  (lambda (b)
+    (set! buffer-list (remq b buffer-list))
     (select-buffer
      (if (null? buffer-list)
          (make-buffer "*scratch*")
-         (car buffer-list)))]))
+         (car buffer-list)))))

@@ -250,6 +250,12 @@
    [(beg end) (buffer-substring current-buffer beg end)]
    [(b beg end) (substring (buffer-content b) beg end)]))
 
+;; Names of temporary buffers start with * character.
+(define buffer-temporary?
+  (case-lambda
+   [() (buffer-temporary? current-buffer)]
+   [(b) (string-starts-with? (buffer-name b) "*")]))
+
 (define buffer-valid-name?
   (lambda (name)
     ;; This needs to be improved, but for

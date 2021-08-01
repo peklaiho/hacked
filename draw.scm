@@ -59,11 +59,11 @@
 (define draw-cursor
   (lambda ()
     (cond
-      [(eq? current-mode MODE_QUERY)
-       (move (minibuffer-line) (string-length (minibuffer-text-to-draw)))]
-      [else
-       (move (- (buffer-line) (buffer-offset-line))
-             (- (buffer-column) (buffer-offset-column)))])))
+     [(eq? current-mode MODE_NORMAL)
+      (move (- (buffer-line) (buffer-offset-line))
+            (- (buffer-column) (buffer-offset-column)))]
+     [else
+      (move (minibuffer-line) (string-length (minibuffer-text-to-draw)))])))
 
 (define screen-size-changed
   (lambda ()

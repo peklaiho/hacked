@@ -91,7 +91,9 @@
         (minibuf-hide-completions)
         (show-on-minibuf "Quit")]
        [(eq? current-mode MODE_QUERY)
-        (minibuf-process-input keycode)]
+        (minibuf-process-input-query keycode)]
+       [(eq? current-mode MODE_CONFIRM)
+        (minibuf-process-input-confirm keycode)]
        [else
         (set! buffered-keycodes (append buffered-keycodes (list keycode)))
         (process-buffered-input)]))))

@@ -5,9 +5,15 @@
 ;; ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 (define minibuffer-text "")
+
+;; Query mode variables
 (define minibuffer-input "")
 (define minibuffer-continuation #f)
 (define minibuffer-completion #f)
+
+;; Confirm mode variables
+(define minibuffer-confirm-yes #f)
+(define minibuffer-confirm-no #f)
 
 (define show-on-minibuf
   (lambda (message)
@@ -20,6 +26,13 @@
     (set! minibuffer-input initial-input)
     (set! minibuffer-continuation cont)
     (set! minibuffer-completion comp-fn)))
+
+(define perform-confirm
+  (lambda (txt yes-fn no-fn)
+    (set! current-mode MODE_CONFIRM)
+    (set! minibuffer-text txt)
+    (set! minibuffer-confirm-yes yes-fn)
+    (set! minibuffer-confirm-no no-fn)))
 
 (define minibuffer-text-to-draw
   (lambda ()
@@ -38,9 +51,22 @@
 (define minibuf-hide-completions
   (lambda ()
     (let ([buf (find-buffer "*completions*")])
-      (when buf (kill-buffer buf)))))
+      (when buf (kill-buffer-really buf)))))
 
-(define minibuf-process-input
+(define minibuf-process-input-confirm
+  (lambda (keycode)
+    (cond
+     [(or (= keycode 89) (= keycode 121))
+      (set! current-mode MODE_NORMAL)
+      (set! minibuffer-text "")
+      (if minibuffer-confirm-yes (minibuffer-confirm-yes) #f)]
+     [(or (= keycode 78) (= keycode 110))
+      (set! current-mode MODE_NORMAL)
+      (set! minibuffer-text "")
+      (if minibuffer-confirm-no (minibuffer-confirm-no) #f)]
+     [else #f])))
+
+(define minibuf-process-input-query
   (lambda (keycode)
     (cond
      ;; Tab
