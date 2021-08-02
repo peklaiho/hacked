@@ -39,6 +39,17 @@
            (substring dir 1 (string-length dir)))
           dir))))
 
+;; Resolve relative filename into absolute filename.
+(define resolve-absolute-filename
+  (lambda (name)
+    (let ([name (expand-directory name)])
+      (if (string-starts-with? name (string (directory-separator)))
+          ;; Already absolute filename
+          name
+          ;; Add current directory to beginning
+          (string-append (add-trailing-directory-separator (current-directory))
+                         name)))))
+
 ;; Read a file from disk.
 (define read-file
   (lambda (filename)
@@ -124,15 +135,15 @@
      "Open file: "
      (add-trailing-directory-separator
       (compact-directory (current-directory)))
-     (lambda (n) (open-file n))
+     (lambda (n) (open-file (resolve-absolute-filename n)))
      complete-filename)]
    [(name)
     (let ([content (read-file name)])
       (if content
           (begin
             (select-buffer (make-buffer (path-last name) content name))
-            (show-message (format "Read ~a" name)))
-          (show-message (format "Unable to read ~a" name))))]))
+            (show-message (format "Read ~a" (compact-directory name))))
+          (show-message (format "Unable to read ~a" (compact-directory name)))))]))
 
 ;; Save buffer into a file.
 (define save-buffer
@@ -144,7 +155,7 @@
              "Save as: "
              (add-trailing-directory-separator
               (compact-directory (current-directory)))
-             (lambda (n) (save-buffer b n))
+             (lambda (n) (save-buffer b (resolve-absolute-filename n)))
              #f))]
    [(b name)
     (if (write-file name (buffer-content b))
@@ -152,5 +163,5 @@
           (buffer-name-set! b (path-last name))
           (buffer-filename-set! b name)
           (buffer-modified-set! b #f)
-          (show-message (format "Wrote ~a" name)))
-        (show-message (format "Unable to write ~a" name)))]))
+          (show-message (format "Wrote ~a" (compact-directory name))))
+        (show-message (format "Unable to write ~a" (compact-directory name))))]))
