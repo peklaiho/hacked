@@ -39,7 +39,9 @@
                          (add1 (buffer-line))
                         (buffer-column)
                         (if (buffer-modified) "*" " ")
-                        (buffer-name))]
+                        (if (buffer-filename)
+                            (compact-directory (buffer-filename))
+                            (buffer-name)))]
            [end (format "hacked ~a " hacked-version)]
            [fill (make-string (- COLS (string-length begin) (string-length end)) #\space)])
       (string-append begin fill end))))
