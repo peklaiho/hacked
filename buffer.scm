@@ -62,6 +62,26 @@
     (let ([buf (find-buffer name)])
       (if buf buf (make-buffer name)))))
 
+;; Get the previous buffer to current-buffer.
+(define previous-buffer
+  (lambda ()
+    (if (= (length buffer-list) 1) #f
+        (let* ([bufs (list->vector buffer-list)]
+               [idx (vector-index-of bufs current-buffer)])
+          (if (= idx (sub1 (vector-length bufs)))
+              (vector-ref bufs 0)
+              (vector-ref bufs (add1 idx)))))))
+
+;; Get the next buffer to current-buffer.
+(define next-buffer
+  (lambda ()
+    (if (= (length buffer-list) 1) #f
+        (let* ([bufs (list->vector buffer-list)]
+               [idx (vector-index-of bufs current-buffer)])
+          (if (= idx 0)
+              (vector-ref bufs (sub1 (vector-length bufs)))
+              (vector-ref bufs (sub1 idx)))))))
+
 ;; Return true if there are modified and non-temporary buffers.
 (define unsaved-buffers?
   (lambda ()

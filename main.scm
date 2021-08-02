@@ -37,7 +37,7 @@
 (define arg-skip-init #f)
 (define arg-load-files (list))
 
-(let arg-loop ([args (reverse (cdr (command-line)))])
+(let arg-loop ([args (cdr (command-line))])
   (when (not (null? args))
     (let ([arg (car args)])
       (cond
@@ -101,8 +101,11 @@
    (assume-default-colors -1 -1)
    (init-pair 1 COLOR_BLACK COLOR_WHITE)
 
+   ;; Creating buffers before ncurses is initialized messes up
+   ;; something currently. That is fine, keep it here.
+
    ;; Open files given from command line
-   (let file-loop ([files arg-load-files])
+   (let file-loop ([files (reverse arg-load-files)])
      (when (not (null? files))
        (let ([fname (resolve-absolute-filename (car files))])
          (cond

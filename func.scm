@@ -375,6 +375,8 @@
 ;; Buffers
 ;; -------
 
+;; Add the given message to *messages* buffer
+;; and optionally display it in minibuffer.
 (define show-message
   (case-lambda
    [(message) (show-message message #t)]
@@ -395,6 +397,7 @@
   (lambda (a b)
     (string-ci<? a b)))
 
+;; Completions for buffer name.
 (define complete-buffer-name
   (lambda (start)
     (list-sort
@@ -407,6 +410,7 @@
             (lambda (a) (string-starts-with? a start))
             names))))))
 
+;; Make a buffer the current buffer.
 (define select-buffer
   (case-lambda
    [()
@@ -420,6 +424,17 @@
    [(b) (set! current-buffer b)
     (reconcile-by-scrolling)]))
 
+(define select-previous-buffer
+  (lambda ()
+    (let ([b (previous-buffer)])
+      (if b (select-buffer b) #f))))
+
+(define select-next-buffer
+  (lambda ()
+    (let ([b (next-buffer)])
+      (if b (select-buffer b) #f))))
+
+;; Kill buffer and confirm from user if it is unsaved.
 (define kill-buffer-confirm
   (case-lambda
    [() (kill-buffer-confirm current-buffer)]
@@ -429,6 +444,7 @@
              (lambda () (kill-buffer b)) #f)
             (kill-buffer b))]))
 
+;; Kill a buffer.
 (define kill-buffer
   (lambda (b)
     (set! buffer-list (remq b buffer-list))

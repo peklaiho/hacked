@@ -34,3 +34,10 @@
      [(= n 1) (f)]
      [else (f)
            (repeat-times f (sub1 n))])))
+
+(define vector-index-of
+  (lambda (v a)
+    (let loop ([i 0])
+      (if (= (vector-length v) i) #f
+          (if (eq? (vector-ref v i) a) i
+              (loop (add1 i)))))))
