@@ -67,7 +67,7 @@
                          (make-transcoder (utf-8-codec)))]
                      [content (get-string-all f)])
                 (close-port f)
-                content))))))))
+                (if (eof-object? content) "" content)))))))))
 
 ;; Write file to disk.
 (define write-file
