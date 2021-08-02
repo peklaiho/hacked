@@ -124,6 +124,8 @@
     (global-set-key (string->keycodes "C-x C-f") 'open-file)
     (global-set-key (string->keycodes "C-x C-s") 'save-buffer)
 
+    (global-set-key (string->keycodes "M-,") 'select-previous-buffer)
+    (global-set-key (string->keycodes "M-.") 'select-next-buffer)
     (global-set-key (string->keycodes "C-x <left>") 'select-previous-buffer)
     (global-set-key (string->keycodes "C-x <right>") 'select-next-buffer)
     (global-set-key (string->keycodes "C-x C-<left>") 'select-previous-buffer)
