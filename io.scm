@@ -142,7 +142,7 @@
       (if content
           (begin
             (select-buffer (make-buffer (path-last name) content name))
-            (show-message (format "Read ~a" (compact-directory name))))
+            (show-message (format "Read ~a" (compact-directory name)) #f))
           (show-message (format "Unable to read ~a" (compact-directory name)))))]))
 
 ;; Save buffer into a file.

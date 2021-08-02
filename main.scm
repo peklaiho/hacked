@@ -37,7 +37,7 @@
 (define arg-skip-init #f)
 (define arg-load-files (list))
 
-(let arg-loop ([args (cdr (command-line))])
+(let arg-loop ([args (reverse (cdr (command-line)))])
   (when (not (null? args))
     (let ([arg (car args)])
       (cond
@@ -76,23 +76,6 @@
       (show-message (format "Load ~a" init-file) #f)
       (load init-file))))
 
-;; Open files given from command line
-(let file-loop ([files arg-load-files])
-  (when (not (null? files))
-    (let ([fname (resolve-absolute-filename (car files))])
-      (cond
-       [(and (file-exists? fname) (not (file-directory? fname)))
-        (open-file fname)]
-       [(and (file-exists? fname) (file-directory? fname))
-        (show-message (format "~a is a directory" (compact-directory fname)))]
-       [else
-        (select-buffer (make-buffer (path-last fname) "" fname))]))
-    (file-loop (cdr files))))
-
-;; Make a scratch buffer if we did not open any files
-(when (or (null? arg-load-files) (not current-buffer))
-  (select-buffer (make-buffer "*scratch*")))
-
 ;; Configure exception handler which closes ncurses
 (with-exception-handler
  (lambda (ex) (endwin) (default-exception-handler ex))
@@ -117,6 +100,23 @@
    (use-default-colors)
    (assume-default-colors -1 -1)
    (init-pair 1 COLOR_BLACK COLOR_WHITE)
+
+   ;; Open files given from command line
+   (let file-loop ([files arg-load-files])
+     (when (not (null? files))
+       (let ([fname (resolve-absolute-filename (car files))])
+         (cond
+          [(and (file-exists? fname) (not (file-directory? fname)))
+           (open-file fname)]
+          [(and (file-exists? fname) (file-directory? fname))
+           (show-message (format "~a is a directory" (compact-directory fname)))]
+          [else
+           (select-buffer (make-buffer (path-last fname) "" fname))]))
+       (file-loop (cdr files))))
+
+   ;; Make a scratch buffer if we did not open any files
+   (when (or (null? arg-load-files) (not current-buffer))
+     (select-buffer (make-buffer "*scratch*")))
 
    ;; Draw screen
    (draw-screen)
