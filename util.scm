@@ -4,6 +4,28 @@
 ;; License: GPLv3
 ;; ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+;; Eval string in exception handler and show result as message.
+(define eval-string
+  (case-lambda
+   [()
+    (perform-query
+     "M-x "
+     ""
+     (lambda (text) (eval-string text))
+     #f)]
+   [(text)
+    (show-message
+     (call/cc
+      (lambda (err)
+        (with-exception-handler
+         (lambda (ex) (err (format "Error: ~s" ex)))
+         (lambda ()
+           (format
+            "Result: ~s"
+            (eval
+             (read
+              (open-string-input-port text)))))))) #f)]))
+
 (define exit-program-confirm
   (lambda ()
     (if (unsaved-buffers?)

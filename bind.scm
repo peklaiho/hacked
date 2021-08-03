@@ -117,6 +117,7 @@
      (range 128 255))
 
     ;; Misc
+    (global-set-key (string->keycodes "M-x") 'eval-string)
     (global-set-key (string->keycodes "C-q") 'exit-program-confirm)
     (global-set-key (string->keycodes "C-x b") 'select-buffer)
     (global-set-key (string->keycodes "C-x k") 'kill-buffer-confirm)
