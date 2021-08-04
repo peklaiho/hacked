@@ -22,7 +22,8 @@
       (mutable line)
       (mutable line-indices)
       (mutable modified)
-      (mutable newline-char))))
+      (mutable newline-char)
+      (mutable undo-ring))))
 
 (define buffer-rcd
   (make-record-constructor-descriptor
@@ -46,6 +47,7 @@
               '#()       ; line-indices
               #f         ; modified
               #\newline  ; newline-char
+              '()        ; undo-ring
               )])
       (buffer-update-line-indices b)
       (set! buffer-list (cons b buffer-list))
@@ -177,6 +179,11 @@
    [() (buffer-newline-char current-buffer)]
    [(b) ((record-accessor buffer-rtd 11) b)]))
 
+(define buffer-undo-ring
+  (case-lambda
+   [() (buffer-undo-ring current-buffer)]
+   [(b) ((record-accessor buffer-rtd 12) b)]))
+
 ;; Setters
 
 (define buffer-name-set!
@@ -250,6 +257,11 @@
   (case-lambda
    [(v) (buffer-newline-char-set! current-buffer v)]
    [(b v) ((record-mutator buffer-rtd 11) b v)]))
+
+(define buffer-undo-ring-set!
+  (case-lambda
+   [(v) (buffer-undo-ring-set! current-buffer v)]
+   [(b v) ((record-mutator buffer-rtd 12) b v)]))
 
 ;; Helpers
 

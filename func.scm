@@ -468,9 +468,9 @@
                     #f))
               #f))]))
 
-;; ----------------
-;; Mark, Kill, Yank
-;; ----------------
+;; ----------------------
+;; Mark, Kill, Yank, Undo
+;; ----------------------
 
 (define kill-ring (list))
 
@@ -504,10 +504,14 @@
         (show-message "Kill ring is empty")
         (begin
           (let* ([content (car kill-ring)]
-                 [len (string-length content)])
-            (insert-string content)
-            (set-point-and-goal
-             (+ (buffer-point) len))
+                 [len (string-length content)]
+                 [pt (buffer-point)])
+            (insert-string content pt)
+            (set-point-and-goal (+ pt len))
+            (undo-push
+             (lambda ()
+               (delete-string pt (+ pt len))
+               (set-point-and-goal pt)))
             (show-message (format "Yanked ~d characters" len)))))))
 
 (define copy-region
@@ -525,5 +529,24 @@
       (add-to-kill-ring content)
       (delete-string (car idx) (cdr idx))
       (set-point-and-goal (car idx))
+      (undo-push
+       (lambda ()
+         (insert-string content (car idx))
+         (set-point-and-goal (cdr idx))))
       (show-message (format "Killed ~d characters"
                             (string-length content))))))
+
+(define undo-push
+  (lambda (action)
+    (buffer-undo-ring-set!
+     (cons action (buffer-undo-ring)))))
+
+(define undo-pop
+  (lambda ()
+    (if (null? (buffer-undo-ring))
+        (show-message (format "No undo action"))
+        (begin
+          ((car (buffer-undo-ring)))
+          (buffer-undo-ring-set!
+           (cdr (buffer-undo-ring)))
+          (show-message "Undo")))))
