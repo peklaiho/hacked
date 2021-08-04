@@ -468,9 +468,15 @@
                     #f))
               #f))]))
 
-;; --------------------
-;; Mark, Copy/Cut/Paste
-;; --------------------
+;; ----------------
+;; Mark, Kill, Yank
+;; ----------------
+
+(define kill-ring (list))
+
+(define add-to-kill-ring
+  (lambda (text)
+    (set! kill-ring (cons text kill-ring))))
 
 (define set-mark-at-point
   (lambda ()
@@ -480,7 +486,44 @@
 
 (define exchange-point-and-mark
   (lambda ()
-    (let* ([b current-buffer]
-           [pt (buffer-point b)])
-      (set-point (buffer-mark b))
-      (buffer-mark-set! b pt))))
+    (let* ([pt (buffer-point)])
+      (set-point-and-goal (buffer-mark))
+      (buffer-mark-set! pt))))
+
+(define get-region
+  (lambda ()
+    (let* ([pt (buffer-point)]
+           [mk (buffer-mark)]
+           [start (if (< pt mk) pt mk)]
+           [end (if (< pt mk) mk pt)])
+      (cons start end))))
+
+(define yank
+  (lambda ()
+    (if (null? kill-ring)
+        (show-message "Kill ring is empty")
+        (begin
+          (let* ([content (car kill-ring)]
+                 [len (string-length content)])
+            (insert-string content)
+            (set-point-and-goal
+             (+ (buffer-point) len))
+            (show-message (format "Yanked ~d characters" len)))))))
+
+(define copy-region
+  (lambda ()
+    (let* ([idx (get-region)]
+           [content (buffer-substring (car idx) (cdr idx))])
+      (add-to-kill-ring content)
+      (show-message (format "Copied ~d characters"
+                            (string-length content))))))
+
+(define kill-region
+  (lambda ()
+    (let* ([idx (get-region)]
+           [content (buffer-substring (car idx) (cdr idx))])
+      (add-to-kill-ring content)
+      (delete-string (car idx) (cdr idx))
+      (set-point-and-goal (car idx))
+      (show-message (format "Killed ~d characters"
+                            (string-length content))))))
