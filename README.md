@@ -45,14 +45,17 @@ There is no plan to support [vim](https://www.vim.org/) style keybindings ("Evil
 
 The initialization file **~/.hacked** is automatically loaded at startup if it exists. You can put your own customizations there as Scheme code. Give the command line option **-q** to skip the loading of the init file.
 
-## Limitations
+## Status
 
-There are still some limitations:
+Currently the editor is suitable for doing some quick and dirty editing in the terminal.
 
-* Only the UTF-8 character encoding is supported
-* Only the Linux-style (\n) line ending is supported
+However, there are still some limitations:
+
+* Only UTF-8 character encoding is supported
+* Only Linux-style (\n) line endings are supported
 * No wrapping of long lines
 * No syntax highlighting
+* No automatic indentation
 
 ## License
 
