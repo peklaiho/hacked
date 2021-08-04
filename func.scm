@@ -452,3 +452,18 @@
      (if (null? buffer-list)
          (make-buffer "*scratch*")
          (car buffer-list)))))
+
+;; Re-read buffer from file.
+(define revert-buffer
+  (case-lambda
+   [() (revert-buffer current-buffer)]
+   [(b) (let ([filename (buffer-filename b)])
+          (if filename
+              (let ([content (read-file filename)])
+                (if content
+                    (begin
+                      (buffer-content-set! b content)
+                      (buffer-modified-set! b #f)
+                      #t)
+                    #f))
+              #f))]))
