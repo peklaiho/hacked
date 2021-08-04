@@ -69,7 +69,7 @@
     (let ([bind (key-map-find-recursively global-key-map buffered-keycodes)])
       (cond
        [(not bind)
-        (show-on-minibuf (format "Key ~a is not bound"
+        (show-message (format "Key ~a is not bound"
                          (keycodes->string buffered-keycodes)))
         (set! buffered-keycodes '())]
        [(key-map? bind)
@@ -89,7 +89,7 @@
         (set! buffered-keycodes '())
         (set! current-mode MODE_NORMAL)
         (minibuf-hide-completions)
-        (show-on-minibuf "Quit")]
+        (show-message "Quit")]
        [(eq? current-mode MODE_QUERY)
         (minibuf-process-input-query keycode)]
        [(eq? current-mode MODE_CONFIRM)
