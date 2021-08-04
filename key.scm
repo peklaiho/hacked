@@ -19,6 +19,9 @@
   (lambda (key)
     (let ([bor bitwise-ior])
       (cond
+       ;; Zero, C-space?
+       [(= key 0) (cons 32 MOD_CTRL)]
+
        ;; Tab/Return/Enter
        [(or (= key 9) (= key 10) (= key 13))
         (cons key 0)]
@@ -182,7 +185,6 @@
        (if (keycode-mod? keycode MOD_ALT) "M-" "")
        (if (keycode-mod? keycode MOD_SHIFT) "S-" "")
        (cond
-        [(= key 0) "<null>"]
         [(= key 9) "<tab>"]
         [(= key 10) "<enter>"]
         [(= key 13) "<return>"]
@@ -231,7 +233,6 @@
         (set! str (substring str 2 (string-length str))))
       (let ([key
         (cond
-          [(string=? str "<null>") 0]
           [(string=? str "<tab>") 9]
           [(string=? str "<enter>") 10]
           [(string=? str "<return>") 13]

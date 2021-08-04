@@ -15,6 +15,7 @@
       (mutable filename)
       (mutable content)
       (mutable point)
+      (mutable mark)
       (mutable goal-col)
       (mutable offset-line)
       (mutable offset-col)
@@ -37,6 +38,7 @@
               filename
               content
               0          ; point
+              0          ; mark
               0          ; goal-col
               0          ; offset-line
               0          ; offset-col
@@ -135,40 +137,45 @@
    [() (buffer-point current-buffer)]
    [(b) ((record-accessor buffer-rtd 3) b)]))
 
+(define buffer-mark
+  (case-lambda
+   [() (buffer-mark current-buffer)]
+   [(b) ((record-accessor buffer-rtd 4) b)]))
+
 (define buffer-goal-column
   (case-lambda
    [() (buffer-goal-column current-buffer)]
-   [(b) ((record-accessor buffer-rtd 4) b)]))
+   [(b) ((record-accessor buffer-rtd 5) b)]))
 
 (define buffer-offset-line
   (case-lambda
    [() (buffer-offset-line current-buffer)]
-   [(b) ((record-accessor buffer-rtd 5) b)]))
+   [(b) ((record-accessor buffer-rtd 6) b)]))
 
 (define buffer-offset-column
   (case-lambda
    [() (buffer-offset-column current-buffer)]
-   [(b) ((record-accessor buffer-rtd 6) b)]))
+   [(b) ((record-accessor buffer-rtd 7) b)]))
 
 (define buffer-line
   (case-lambda
    [() (buffer-line current-buffer)]
-   [(b) ((record-accessor buffer-rtd 7) b)]))
+   [(b) ((record-accessor buffer-rtd 8) b)]))
 
 (define buffer-line-indices
   (case-lambda
    [() (buffer-line-indices current-buffer)]
-   [(b) ((record-accessor buffer-rtd 8) b)]))
+   [(b) ((record-accessor buffer-rtd 9) b)]))
 
 (define buffer-modified
   (case-lambda
    [() (buffer-modified current-buffer)]
-   [(b) ((record-accessor buffer-rtd 9) b)]))
+   [(b) ((record-accessor buffer-rtd 10) b)]))
 
 (define buffer-newline-char
   (case-lambda
    [() (buffer-newline-char current-buffer)]
-   [(b) ((record-accessor buffer-rtd 10) b)]))
+   [(b) ((record-accessor buffer-rtd 11) b)]))
 
 ;; Setters
 
@@ -188,9 +195,10 @@
    [(b v) ((record-mutator buffer-rtd 2) b v)
     (buffer-modified-set! b #t)
     (buffer-update-line-indices b)
-    ;; Check point is inside bounds and call
-    ;; buffer-update-line also.
-    (buffer-point-set! b (buffer-point b))]))
+    ;; Check point and mark are inside bounds.
+    ;; Also calls buffer-update-line.
+    (buffer-point-set! b (buffer-point b))
+    (buffer-mark-set! b (buffer-mark b))]))
 
 (define buffer-point-set!
   (case-lambda
@@ -199,15 +207,21 @@
            (min-max v 0 (buffer-length b)))
     (buffer-update-line b)]))
 
+(define buffer-mark-set!
+  (case-lambda
+   [(v) (buffer-mark-set! current-buffer v)]
+   [(b v) ((record-mutator buffer-rtd 4) b
+           (min-max v 0 (buffer-length b)))]))
+
 (define buffer-goal-column-set!
   (case-lambda
    [(v) (buffer-goal-column-set! current-buffer v)]
-   [(b v) ((record-mutator buffer-rtd 4) b v)]))
+   [(b v) ((record-mutator buffer-rtd 5) b v)]))
 
 (define buffer-offset-line-set!
   (case-lambda
    [(v) (buffer-offset-line-set! current-buffer v)]
-   [(b v) ((record-mutator buffer-rtd 5) b
+   [(b v) ((record-mutator buffer-rtd 6) b
            (min-max v 0 (sub1 (vector-length (buffer-line-indices b)))))]))
 
 (define buffer-offset-column-set!
@@ -215,27 +229,27 @@
    [(v) (buffer-offset-column-set! current-buffer v)]
    [(b v) (let* ([idx (buffer-line-index b (buffer-line b))]
                  [max (- (cdr idx) (car idx))])
-            ((record-mutator buffer-rtd 6) b (min-max v 0 max)))]))
+            ((record-mutator buffer-rtd 7) b (min-max v 0 max)))]))
 
 (define buffer-line-set!
   (case-lambda
    [(v) (buffer-line-set! current-buffer v)]
-   [(b v) ((record-mutator buffer-rtd 7) b v)]))
+   [(b v) ((record-mutator buffer-rtd 8) b v)]))
 
 (define buffer-line-indices-set!
   (case-lambda
    [(v) (buffer-line-indices-set! current-buffer v)]
-   [(b v) ((record-mutator buffer-rtd 8) b v)]))
+   [(b v) ((record-mutator buffer-rtd 9) b v)]))
 
 (define buffer-modified-set!
   (case-lambda
    [(v) (buffer-modified-set! current-buffer v)]
-   [(b v) ((record-mutator buffer-rtd 9) b v)]))
+   [(b v) ((record-mutator buffer-rtd 10) b v)]))
 
 (define buffer-newline-char-set!
   (case-lambda
    [(v) (buffer-newline-char-set! current-buffer v)]
-   [(b v) ((record-mutator buffer-rtd 10) b v)]))
+   [(b v) ((record-mutator buffer-rtd 11) b v)]))
 
 ;; Helpers
 

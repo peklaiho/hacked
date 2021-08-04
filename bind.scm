@@ -132,6 +132,10 @@
     (global-set-key (string->keycodes "C-x C-<left>") 'select-previous-buffer)
     (global-set-key (string->keycodes "C-x C-<right>") 'select-next-buffer)
 
+    ;; Mark, cut/copy/paste
+    (global-set-key (string->keycodes "C-<space>") 'set-mark-at-point)
+    (global-set-key (string->keycodes "C-x C-x") 'exchange-point-and-mark)
+
     ;; Movement
     (global-set-key (string->keycodes "<left>") 'backward-character)
     (global-set-key (string->keycodes "<right>") 'forward-character)

@@ -467,3 +467,20 @@
                       #t)
                     #f))
               #f))]))
+
+;; --------------------
+;; Mark, Copy/Cut/Paste
+;; --------------------
+
+(define set-mark-at-point
+  (lambda ()
+    (let ([b current-buffer])
+      (buffer-mark-set! b (buffer-point b))
+      (show-message "Mark set"))))
+
+(define exchange-point-and-mark
+  (lambda ()
+    (let* ([b current-buffer]
+           [pt (buffer-point b)])
+      (set-point (buffer-mark b))
+      (buffer-mark-set! b pt))))
