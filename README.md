@@ -45,7 +45,7 @@ If you are familiar with Emacs then you should feel right at home with the keybi
 * Save buffer `C-x C-s`
 * Kill buffer `C-x k`
 * Select buffer `C-x b`
-* Select next buffer `M-.` or `C-x &lt;right&gt;`, select previous buffer `M-,` or `C-x &lt;left&gt;`
+* Select next buffer `M-.` or `C-x right`, select previous buffer `M-,` or `C-x left`
 
 ### Movement
 
@@ -57,7 +57,7 @@ If you are familiar with Emacs then you should feel right at home with the keybi
 * Begin of line `C-a`, end of line `C-e`
 * Go to first non-whitespace character `M-m`
 * Go to specific line `M-g`
-* Begin of buffer `M-&lt;`, end of buffer `M-&gt;`
+* Begin of buffer `M-<`, end of buffer `M->`
 * Scroll one line or column with Ctrl and arrow keys
 * Scroll page down `C-v`, scroll page up `M-v`
 * Center current line on screen `C-l`
@@ -66,11 +66,11 @@ If you are familiar with Emacs then you should feel right at home with the keybi
 ### Editing
 
 * Delete character forward `C-d`
-* Delete word forward `M-d`, delete word backward `M-&lt;backspace&gt;`
+* Delete word forward `M-d`, delete word backward `M-backspace`
 * Delete rest of line `C-k`
 * Normal delete, backspace keys work as expected
 
-You can create a region by using `C-&lt;space&gt;` to set a mark at the current location and then moving the cursor to another end of the region. Then you can use `C-w` to cut and `M-w` to copy the text of the selected region. Use `C-y` to paste the copied text. You can also exchange the position of mark and cursor with `C-x C-x`.
+You can create a region by using `C-space` to set a mark at the current location and then moving the cursor to another end of the region. Then you can use `C-w` to cut and `M-w` to copy the text of the selected region. Use `C-y` to paste the copied text. You can also exchange the position of mark and cursor with `C-x C-x`.
 
 Note that unlike Emacs, deleting text by other means, such as `C-k` does not add it to the kill ring for paste. So you have to explicitly use `C-w` if you intend to paste it.
 
