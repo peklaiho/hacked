@@ -36,45 +36,45 @@ $ hacked file1.txt file2.txt
 
 If you are familiar with Emacs then you should feel right at home with the keybindings. `C` stands for Ctrl and `M` stands for Alt in this section.
 
-* Exit program <kbd>C-q</kbd> or <kbd>C-x C-c</kbd>
-* Eval Scheme code <kbd>M-x</kbd>
+* Exit program `C-q` or `C-x C-c`
+* Eval Scheme code `M-x`
 
 ### Buffers and Files
 
-* Open file <kbd>C-x C-f</kbd>
-* Save buffer <kbd>C-x C-s</kbd>
-* Kill buffer <kbd>C-x k</kbd>
-* Select buffer <kbd>C-x b</kbd>
-* Select next buffer <kbd>M-.</kbd> or <kbd>C-x &lt;right&gt;</kbd>, select previous buffer <kbd>M-,</kbd> or <kbd>C-x &lt;left&gt;</kbd>
+* Open file `C-x C-f`
+* Save buffer `C-x C-s`
+* Kill buffer `C-x k`
+* Select buffer `C-x b`
+* Select next buffer `M-.` or `C-x &lt;right&gt;`, select previous buffer `M-,` or `C-x &lt;left&gt;`
 
 ### Movement
 
-* Forward character <kbd>C-f</kbd>, backward character <kbd>C-b</kbd>
-* Forward word <kbd>M-f</kbd>, backward word <kbd>M-b</kbd>
-* Forward sentence <kbd>M-e</kbd>, backward sentence <kbd>M-a</kbd>
-* Forward paragraph <kbd>M-}</kbd> or <kbd>M-n</kbd>, backward paragraph <kbd>M-{</kbd> or <kbd>M-p</kbd>
-* Next line <kbd>C-n</kbd>, previous line <kbd>C-p</kbd>
-* Begin of line <kbd>C-a</kbd>, end of line <kbd>C-e</kbd>
-* Go to first non-whitespace character <kbd>M-m</kbd>
-* Go to specific line <kbd>M-g</kbd>
-* Begin of buffer <kbd>M-&lt;</kbd>, end of buffer <kbd>M-&gt;</kbd>
+* Forward character `C-f`, backward character `C-b`
+* Forward word `M-f`, backward word `M-b`
+* Forward sentence `M-e`, backward sentence `M-a`
+* Forward paragraph `M-}` or `M-n`, backward paragraph `M-{` or `M-p`
+* Next line `C-n`, previous line `C-p`
+* Begin of line `C-a`, end of line `C-e`
+* Go to first non-whitespace character `M-m`
+* Go to specific line `M-g`
+* Begin of buffer `M-&lt;`, end of buffer `M-&gt;`
 * Scroll one line or column with Ctrl and arrow keys
-* Scroll page down <kbd>C-v</kbd>, scroll page up <kbd>M-v</kbd>
-* Center current line on screen <kbd>C-l</kbd>
+* Scroll page down `C-v`, scroll page up `M-v`
+* Center current line on screen `C-l`
 * Arrow keys, page up/down, home/end etc. work as expected
 
 ### Editing
 
-* Delete character forward <kbd>C-d</kbd>
-* Delete word forward <kbd>M-d</kbd>, delete word backward <kbd>M-&lt;backspace&gt;</kbd>
-* Delete rest of line <kbd>C-k</kbd>
+* Delete character forward `C-d`
+* Delete word forward `M-d`, delete word backward `M-&lt;backspace&gt;`
+* Delete rest of line `C-k`
 * Normal delete, backspace keys work as expected
 
-You can create a region by using <kbd>C-&lt;space&gt;</kbd> to set a mark at the current location and then moving the cursor to another end of the region. Then you can use <kbd>C-w</kbd> to cut and <kbd>M-w</kbd> to copy the text of the selected region. Use <kbd>C-y</kbd> to paste the copied text. You can also exchange the position of mark and cursor with <kbd>C-x C-x</kbd>.
+You can create a region by using `C-&lt;space&gt;` to set a mark at the current location and then moving the cursor to another end of the region. Then you can use `C-w` to cut and `M-w` to copy the text of the selected region. Use `C-y` to paste the copied text. You can also exchange the position of mark and cursor with `C-x C-x`.
 
-Note that unlike Emacs, deleting text by other means, such as <kbd>C-k</kbd> does not add it to the kill ring for paste. So you have to explicitly use <kbd>C-w</kbd> if you intend to paste it.
+Note that unlike Emacs, deleting text by other means, such as `C-k` does not add it to the kill ring for paste. So you have to explicitly use `C-w` if you intend to paste it.
 
-The editor has simple undo functionality using <kbd>C-/</kbd>, <kbd>C-_</kbd> or <kbd>C-x u</kbd>, but the undo just reverses the previous cut or paste operation and does not take into account other editing yet.
+The editor has simple undo functionality using `C-/`, `C-_` or `C-x u`, but the undo just reverses the previous cut or paste operation and does not take into account other editing yet.
 
 ## Initialization File
 
