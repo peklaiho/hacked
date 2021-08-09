@@ -336,7 +336,14 @@
     (let ([start (buffer-point)]
           [end (cdr (buffer-line-index))])
       ;; Add 1 when at the end of line to delete the linebreak.
-      (delete-string start (if (= start end) (add1 end) end)))))
+      (when (and (= start end) (< end (buffer-length)))
+        (set! end (add1 end)))
+      (let ([content (buffer-substring start end)])
+        (undo-push
+         (lambda ()
+           (insert-string content start)
+           (set-point-and-goal start)))
+        (delete-string start end)))))
 
 ;; ---------
 ;; Insertion
