@@ -1,6 +1,8 @@
 # hacked - hacker's editor
 
-*hacked* is [ncurses](https://invisible-island.net/ncurses/) based text editor written in [Chez Scheme](https://cisco.github.io/ChezScheme/). It may run on other Scheme implementations with some modifications.
+*hacked* is [ncurses](https://invisible-island.net/ncurses/) based text editor written in [Chez Scheme](https://cisco.github.io/ChezScheme/) by [Pekka Laiho](http://laihoconsulting.com/). It may run on other Scheme implementations with some modifications.
+
+Also check out [med](https://bitbucket.org/maddy83/med/), a similar text editor written in C++.
 
 ## Philosophy
 
