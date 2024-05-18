@@ -1,8 +1,8 @@
 # hacked - hacker's editor
 
-*hacked* is [ncurses](https://invisible-island.net/ncurses/) based text editor written in [Chez Scheme](https://cisco.github.io/ChezScheme/) by [Pekka Laiho](http://laihoconsulting.com/). It may run on other Scheme implementations with some modifications.
+*hacked* is [ncurses](https://invisible-island.net/ncurses/) based text editor written in [Chez Scheme](https://cisco.github.io/ChezScheme/). It may run on other Scheme implementations with some modifications.
 
-Also check out [med](https://bitbucket.org/maddy83/med/), a similar text editor written in C++.
+Also check out [med](https://github.com/peklaiho/med), a similar text editor written in C++.
 
 ## Philosophy
 
@@ -102,6 +102,6 @@ Some or all of these may be added during future development. The editor will not
 
 ## License
 
-[GPLv3](https://bitbucket.org/maddy83/hacked/src/master/LICENSE)
+GNU General Public License v3.0
 
 For regular expressions the [pregexp](https://github.com/ds26gte/pregexp) library by Dorai Sitaram is included.
